@@ -98,7 +98,24 @@ Diese sind in \tab{tab:Vorteile_Kreuzprodukt_Implementierungen} aufgeführt.
 
 \noindent Für große Zeitreihen müsste sich die Implementierung mittels dem Subarray als effizienter erweisen, besonders wenn die Berechnungen auf der \ac{GPU} durchgeführt werden.
 Als Nachweis und für das Effizienzverhalten bei kleinen Zeitreihen wurde ein Benchmark durchgeführt.
-Die Ergebnisse sind in \tab{tab:FOO} festgehalten.
+Die Ergebnisse sind in \tab{tab:Benchmark_Kreuzprodukt_Implementierung} festgehalten.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | p{5cm} | p{3.5cm} | p{3.5cm} | }
+		\hline \rowcolor{gray!15}
+		\textbf{Anzahl Datensätze} & \textbf{For-Schleife} & \textbf{Subarray} \\ \hhline{|=|=|=|}
+		100 & 6 (342) & 4 (13) \\ \hline
+		1.000 & 20 (489) & 7 (22) \\ \hline
+		10.000 & 53 (527) & 5 (21) \\ \hline
+		100.000 & 333 (1159) & 5 (15) \\ \hline
+		1.000.000 & 3205 (4129) & 47 (64) \\ \hline
+		10.000.000 & 32358 (33594) & 442 (453) \\ \hline
+
+	\end{tabular}
+	\caption{Benchmark-Ergebnisse in ms der verschiedenen Implementierungsmöglichkeiten für das Kreuzprodukt. Die Messung ist nach 5 Durchläufen gemessen, die Zahl in Klammern gibt die Zeit des ersten Durchlaufs an.}
+	\label{tab:Benchmark_Kreuzprodukt_Implementierung}
+\end{table}
 
 3 Varianten
 
