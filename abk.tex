@@ -1,0 +1,20 @@
+
+\chapter*{Abkürzungsverzeichnis}                   % chapter*{..} -->   keine Nummer, kein "Kapitel"
+						         % Nicht ins Inhaltsverzeichnis
+\addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}   % Damit das doch ins Inhaltsverzeichnis kommt
+\markboth{\uppercase{Abkürzungsverzeichnis}}{} % Damit es im header angezeigt wird
+
+% Hier werden die Abkürzungen definiert
+\begin{acronym}[DHBW]
+  % \acro{Name}{Darstellung der Abkürzung}{Langform der Abkürzung}
+  \acro{DSL}{Domain-specific language}
+  \acro{JVM}{Java virtual machine}
+  \acro{CPU}{Central processing unit}
+  \acro{GPU}{Graphics processing unit}
+  
+  \acro{PDF}{Portable Document Format}
+  \acro{DTO}{Data transfer object}
+  \acrodefplural{DTO}{Data transfer objects}
+  
+\end{acronym}
+

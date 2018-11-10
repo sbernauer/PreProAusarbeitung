@@ -1,0 +1,39 @@
+\chapter{Aufgabenstellung}
+\section{Zu Grunde liegendes Framework}
+In dem Umfeld der Arbeit hat sich das Framework ND4J in der Programmiersprache Java für den Praxiseinsatz durchgesetzt.
+Daher soll die in dieser Arbeit entwickelte \ac{DSL} auf diesem Framework aufbauen.
+
+\section{Compiler oder Interpreter?}
+Die \ac{DSL} ist für das Vorprozessieren von Daten für maschinelles Lernen.
+Für die \ac{DSL} kommt ein Compiler oder Interpreter in Frage.
+Ein Transpiler ist nicht möglich, da es keine in der Praxis verwendete Sprache für das Vorprozessieren der Daten gibt, in die übersetzt werden kann.
+In der \tab{tab:Vorteile_Compiler_Interpreter} werden die Implementierungsmöglichkeiten mittels Compiler und Interpreter gegenüber gestellt.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | p{3cm} | p{6cm} | p{6cm} | }
+		\hline \rowcolor{gray!15}
+		\textbf{Implemen-tierung} & \textbf{Vorteile} & \textbf{Nachteile} \\ \hhline{|=|=|=|}
+		Compiler & Generierter Java-Code kann auf jeder \ac{JVM} ausgeführt werden, es wird kein Interpreter benötigt. & Debugging ist nur in dem generierten Java-Code möglich. \\ \hline
+		Interpreter & Debugging leichter möglich & Möglicherweise nicht so performant \\ \hline
+	\end{tabular}
+	\caption{Vor- und Nachteile einer Implementierung mittels Compiler oder Interpreter}
+	\label{tab:Vorteile_Compiler_Interpreter}
+\end{table}
+
+TODO Antlr
+TODO Graal + Truffle
+
+\section{Verwendete Technologien}
+Die \ac{DSL} wird mittels einem Interpreter ausgeführt.
+Dieser baut auf folgenden Technologien auf:
+\begin{description}
+	\item{\textbf{ND4J}}\newline Matrizen-Berechnungen werden mittels dem ND4J-Framework durchgeführt.
+	\item{\textbf{Java}}\newline Das ND4J-Framework ist in der Programmiersprache Java verfügbar. Damit der Interpreter es verwenden kann, wird in dieser Sprache geschrieben.
+	\item{\textbf{Graal}}\newline TODO
+	\item{\textbf{Antlr}}\newline Antlr v4 wird für das Parser der eingegebenen Programme verwendet.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\endinput
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

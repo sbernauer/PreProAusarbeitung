@@ -1,0 +1,104 @@
+\usepackage{listingsutf8}
+
+\lstdefinelanguage{Java}{
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
+%  basicstyle=\fontsize{9}{11}\ttfamily,
+  moredelim=[il][\textcolor{pgrey}]{$.$},
+  moredelim=[is][\textcolor{pgrey}]{\%\%}{\%\%},
+  frame=single,
+  tabsize=2,
+  keywords={private, INDArray, double, int, new, for, return, Vector3}
+}
+
+\lstdefinelanguage{docker}{
+	numbers=left,
+	keywords={FROM, RUN, COPY, ADD, ENTRYPOINT, CMD,  ENV, WORKDIR, EXPOSE, LABEL, USER, VOLUME, STOPSIGNAL, ONBUILD, MAINTAINER},
+	keywordstyle=\color{blue}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{\#},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]",
+	breaklines=true
+}
+
+\lstdefinelanguage{bash}{
+	numbers=left,
+	keywords={if, then, else, fi, while, do, done, sleep, service, cd, rm, touch, apt, apt-get, echo, docker},
+	keywordstyle=\color{blue}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{\#},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]",
+	breaklines=true
+}
+
+%\lstdefinelanguage{bash}{
+%		basicstyle=\ttfamily,
+%		numbers=left,
+%		showstringspaces=false,
+%		commentstyle=\color{purple},
+%		keywordstyle=\color{blue},
+%		inputencoding=utf8,
+%		extendedchars=true
+%	basicstyle=\ttfamily,
+%	numbers=left,
+%	showstringspaces=false,
+%	inputencoding=utf8,
+%	extendedchars=true,
+%	keywords={FROM, RUN, COPY, ADD, ENTRYPOINT, CMD,  ENV, WORKDIR, EXPOSE, LABEL, USER, VOLUME, STOPSIGNAL, ONBUILD, MAINTAINER},
+%	keywordstyle=\color{blue}\bfseries,
+%	identifierstyle=\color{black},
+%	sensitive=false,
+%	comment=[l]{\#},
+%	commentstyle=\color{purple}\ttfamily,
+%	stringstyle=\color{red}\ttfamily,
+%	morestring=[b]',
+%	morestring=[b]"
+%}
+
+%\lstdefinelanguage{docker-compose}{
+%	keywords={image, environment, ports, container_name, ports, volumes, links},
+%	keywordstyle=\color{blue}\bfseries,
+%	identifierstyle=\color{black},
+%	sensitive=false,
+%	comment=[l]{\#},
+%	commentstyle=\color{purple}\ttfamily,
+%	stringstyle=\color{red}\ttfamily,
+%	morestring=[b]',
+%	morestring=[b]"
+%}
+\lstdefinelanguage{docker-compose-2}{
+	keywords={version, volumes, services},
+	keywordstyle=\color{blue}\bfseries,
+	keywords=[2]{image, environment, ports, container_name, ports, links, build, hostname, networks, deploy},
+	keywordstyle=[2]\color{purple}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{\#},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]"
+}
+
+\lstset{
+	basicstyle=\ttfamily,
+	showstringspaces=false,
+	commentstyle=\color{purple},
+	keywordstyle=\color{blue},
+	inputencoding=utf8,
+	extendedchars=true
+}

@@ -1,0 +1,35 @@
+
+\chapter{Überblick über Technologien}
+
+Das Aufbereiten der Daten für das neuronale Netz kann in mehreren Frameworks in mehreren Sprachen erfolgen.
+Oft wird für das Vorverarbeiten die gleiche Sprache wie für das neuronale Netz verwendet.
+Die gängigsten Frameworks sind in \tab{tab:Frameworks} gelistet.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | p{3cm} | p{3cm} | }
+		\hline \rowcolor{gray!15}
+		\textbf{Framework} & \textbf{Sprache} \\ \hhline{|=|=|}
+		Tensorflow & Python \\ \hline
+		DL4J & Java \\ \hline
+	\end{tabular}
+	\caption{Die gängigsten Frameworks für maschinelles Lernen}
+	\label{tab:Frameworks}
+\end{table}
+
+\section{Unterschied Compiler, Transpiler und Interpreter}
+\begin{description}
+	\item{\textbf{Compiler}}\newline{Übersetzt von einer höheren Sprache in eine niedrigere Sprache.}
+	\item{\textbf{Transpiler}}\newline{Übersetzt zwischen zwei Sprachen mit ungefähr gleichem Abstraktionsgrad.}
+	\item{\textbf{Interpreter}}\newline{Führt Code einer höheren Sprache direkt aus.}
+\end{description}
+
+\section{ND4J}
+ND4J ist eine Framework für die Sprache Java, in welchem effiziente Matrizenoperationen durchgeführt werden können.
+Es kann auf der \ac{CPU} oder \ac{GPU} ausgeführt werden.
+In ND4J ist größtenteils nur das Konstrukt einer Matrix bekannt, Vektoren sind nur ein Spezialfall einer Matrix.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\endinput
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

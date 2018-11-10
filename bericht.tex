@@ -1,0 +1,110 @@
+
+\documentclass[
+   ngerman          % neue deutsche Rechtschreibung
+  ,a4paper          % Papiergrösse
+  ,twoside          % Zweiseitiger Druck (rechts/links)
+  ,12pt             % Schriftgrösse
+%  ,pdftex
+%  ,disable         % Todo-Markierungen auschalten
+]{report}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage[table]{xcolor} % Must be before usapackage{bericht}, because clashing package
+\usepackage{varioref}
+
+\usepackage{bericht}
+\input{lstlistingStyle.sty}
+
+% Hurenkinder und Schusterjungen verhindern
+\clubpenalty = 10000
+\widowpenalty = 10000
+\displaywidowpenalty = 10000
+
+\usepackage[toc, style=altlist, nonumberlist, xindy]{glossaries}
+\defglsdisplayfirst[main]{#1#4\protect\footnote{#2}} %Fussnote bei erster Verwendung von GLS entry
+
+\input{kapitel/glossar}
+\makeglossaries
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Angaben zur Arbeit
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Autor}{Sebastian Bernauer}
+\newcommand{\MatrikelNummer}{7390071}
+\newcommand{\Kursbezeichnung}{TINF16B5}
+
+\newcommand{\FirmenName}{United Internet AG}
+\newcommand{\FirmenStadt}{Karlsruhe}
+\newcommand{\FirmenLogoDeckblatt}{}
+
+\newcommand{\BetreuerFirma}{Max Mustermann}
+\newcommand{\BetreuerDHBW}{TODO: Rausfinden}
+
+\newcommand{\Was}{Studienarbeit}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Titel}{Entwicklung einer DSL zum Rechnen mit mathematischen Formeln für Anwendungen im Maschinellem Lernen}
+\newcommand{\AbgabeDatum}{XX.XX.20XX}
+\newcommand{\Dauer}{XX Wochen}
+\newcommand{\Abschluss}{Bachelor of Science}
+\newcommand{\Studiengang}{Angewandte Informatik}
+
+\hypersetup{%%
+  pdfauthor={\Autor},
+  pdftitle={\Titel},
+  pdfsubject={\Was}
+}
+
+\bibliography{bericht}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+{
+	\setstretch{1.0}
+	\input{titelseite}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Nur für Bachelorarbeiten einfügen:
+\input{erklaerung}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{abstract}
+TODO
+\end{abstract}
+
+\newpage
+{
+	\setstretch{1.1}
+	\tableofcontents           % Inhaltsverzeichnis hier ausgeben
+}
+
+\input{kapitel/kapitel1}
+\input{kapitel/kapitel2}
+\input{kapitel/kapitel3}
+\input{kapitel/kapitel4}
+\input{kapitel/kapitel5}
+
+\glsaddall
+\printglossary[title=Glossar,toctitle=Glossar]
+
+\input{kapitel/anhang}
+
+\include{abk}              % Abkürzungsverzeichnis
+
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+\listoffigures             % Liste der Abbildungen
+
+%\chapter*{Literaturverzeichnis}
+\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+\def\refname{Literaturverzeichnis} %TODO
+\printbibliography
+
+\end{document}
