@@ -1,10 +1,125 @@
 
 \chapter{Design der DSL}
-Funktionen mit Parametern (copy parameter(?)).
-Die \ac{DSL} soll dynamisch typisiert sein.
-Variablen müssen zuvor mit Typ definiert werden.
-Alle Variablen sind intern ein INDArray.
-Debugging ist wichtig.
+
+\section{Funktionen}
+In Programmiersprachen werden meist manche Codezeilen häufig benötigt.
+Anstatt diese Zeilen mehrfach zu kopieren, kann man diese Zeilen in eine sogenannte Funktion packen.
+Diese Funktionen können an beliebiger Stelle im Code aufgerufen werden.
+Auf diese Weise kürzt man den entstandenen Code, erhöht die Lesbarkeit und verhindert Kopierfehler.\\
+Daher soll die zu entwickelnde \ac{DSL} auch Funktionen unterstützen.\\
+\textbf{Parameter}\\
+Funktionen können auch parametrisiert werden, was bedeutet, dass bei dem Aufruf der Funktion Werte mitgegeben werden können.
+Jede Funktion hat ihren eigenen Variablen-Gültigkeitsbereich, das bedeutet, dass Funktionen ihren Variablen den gleichen Namen geben können, aber unterschiedliche Variablen verwenden.
+Wenn eine Funktion Werte übergeben bekommen möchte, so muss sie diese mitsamt ihrem Typ angeben.\\
+\textbf{Rückgabetyp}\\
+Funktionen können eine Wert zurückgeben.
+Dieser muss einen bestimmten Typ haben.
+In der DSL ist ein Rückgabetyp möglich und muss mittels ``returns <Typ>'' gekennzeichnet sein.
+Ist keine Angabe gemacht ist keine Rückgabe vorhanden.\\
+\textbf{Überladen von Funktionen}\\
+Eine Funktion bezeichnet man als überladen, wenn es mehrere Funktionen mit gleichen Namen, aber unterschiedlicher Zahl oder Art von Parametern gibt.
+In der DSL ist ein Überladen von Funktionen nicht vorgesehen, könnte aber nachträglich noch implementiert werden.\\
+Ein Beispiel von verschiedenen Funktionen befindet sich in \code{lst:Bsp_Funktionen}.\\
+
+\subsection{Main-Funktion}
+Jedes prozedurale Programm benötigt einen Einstiegspunkt, wo das Programm gestartet wird.
+Da die DSL ein Framework verwendet, welches in Java geschrieben ist, ist es nicht unwahrscheinlich, dass die zukünftigen Nutzer vorher in Java programmiert haben.
+Daher wurde als Einstiegspunkt des Programms - wie in Java - eine Main-Funktion gewählt.
+In der DSL besitzt sie keine Parameter.
+Um Daten in sein Programm zu laden wurde der Ansatz eines DataSets gewählt, mehr dazu in \kap{sec:Import}.
+
+\subsection{Weglassen der Main-Funktion}
+Es gibt mehrere Gründe, warum die Definition einer Main-Funktion unnötig ist:
+\begin{itemize}
+\item Es soll nur ein einziger arithmetischer Ausdruck ausgewertet werden.
+\item Kompatibilität mit bisher bestehenden anderen Tools, die keine Funktionen bieten, sondern nur eine Liste von Anweisungen entgegennehmen.
+\end{itemize}
+Deshalb wird die Main-Funktion in PrePro als optional gesehen und muss nicht deklariert werden.
+Es reicht aus die Befehle untereinander zu schreiben.\\
+Trotzdem wird es als guter Stil erachtet, eine Main-Funktion zu deklarieren.
+
+\begin{lstlisting}[language=prepro, label={lst:Bsp_Funktionen}, caption={Beispiel Funktionen}, captionpos=b]
+function main() {
+	import vec3 p1, vec3 p2, vec3 p3;
+
+	vec3 x = calculateDifference(p1, p2);
+	vec3 s = calculateDifference(p1, p3);
+	vec3 y = s X x;
+	vec3 z = y X x;
+
+
+	printResults(x, y, z);
+
+	export x, y, z;
+}
+
+function calculateDifference(vec3 p1, vec3 p2) returns vec3 {
+	return p2 - p1;
+}
+
+function printResults(vec3 x, vec3 y, vec3 z) {
+	print x;
+	print y;
+	print z;
+}
+\end{lstlisting}
+
+\section{Variablen}
+Die \ac{DSL} ist für den Einsatz auf Zeitreihenberechnungen ausgelegt.
+Daher stellt in der \ac{DSL} jede Variable eine Zeitreihe dar.
+Die Operationen der \ac{DSL} sind immer auf Zeitreihen definiert.\\
+Beispielhaft wird der Ausdruck \texttt{x = a - b;} angenommen.
+In diesem Fall sind \texttt{a} und \texttt{b} gemessene Zeitreihen von Sensordaten.
+Die entstehende Variable \texttt{x} ist wiederum eine Zeitreihe, welche durch elementweise Subtraktion jedes Zeitelements entstanden ist.\\
+Der Vorteil liegt darin, dass der simple Ausdruck \texttt{x = a - b;} sehr leicht les- und wartbar ist.
+Wenn jede Variable keine Zeitreihe, sondern ein einzelner Messpunkt wäre, müsste man eine Schleife verwenden oder sich eigene Methoden definieren bzw. (falls in der Sprache möglich) die Operatoren überschreiben.\\
+Variablen haben in der \ac{DSL} immer einen Typ.
+Bei dem Anlegen einer Variablen muss dieser auch immer definiert werden.
+Ein Typ ist zum Beispiel ein Vector3 (vec3) oder eine Matrix (mat).
+Ein Vector3 ist eine Zeitreihe von Vektoren mit der Länge 3, eine Matrix eine Zeitreihe von Matrizen.
+Ein dem Programm zur Verfügung gestellter Vektor der Länge 3 kann nun als Vector3 oder auch als Matrix aufgefasst werden.
+Daher muss dem Interpreter beim Anlegen der Variablen immer der Typ mitgeteilt werden.
+Wenn die Variable schon existiert, muss der Typ nicht erneut angegeben werden.\\
+Ein Beispiel befindet sich in \code{lst:Bsp_Variablenzuweisung}.\\
+Das Import-Statement wird in \kap{sec:Import} erläutert, relevant ist an dieser Stelle nur, dass mit dem Import Daten aus einem DataSet geladen werden.
+
+\begin{lstlisting}[language=prepro, label={lst:Bsp_Variablenzuweisung}, caption={Beispiel Variablenzuweisung}, captionpos=b]
+import vec3 p1, vec3 p2, vec3 p3;
+
+vec3 x = p2 - p1;
+vec3 s = p3 - p1;
+vec3 y = s X x;
+vec3 z = y X x;
+\end{lstlisting}
+
+\section{DataSet}
+Ein DataSet ist in der DSL eine Sammlung von Variablen der \ac{DSL}.
+In das DataSet können beliebig viele Variablen unter ihrem Namen gespeichert werden.
+Es ist nicht möglich zwei Variablen mit dem gleichen Namen abzulegen.
+Eine Variable kann bequem aus dem DataSet ausgelesen werden.
+
+\section{Import \& Export}
+\label{sec:Import}
+
+Ein Programm, das nur Berechnungen anstellt erscheint auf den ersten Blick sinnlos.
+Das Programm muss die Möglichkeit haben, Daten zu lesen und zu schreiben.
+Im Falle der DSL wird ein eigenes DataSet definiert.
+Das Programm erhält bei der Ausführung ein DataSet und gibt als Ergebnis wieder ein DataSet zurück.
+In das Eingabe-DataSet werden alle Variablen gespeichert, die für die Berechnungen benötigt werden.
+In dem Ausgabe-DataSet sind anschließend alle Variablen gespeichert, die berechnet wurden.\\
+Die Verwendung eines DataSet hat gegenüber dem Hereingeben mittels Parametern in die Main-Funktion folgende Vorteile:
+\begin{itemize}
+\item Es gibt nur einen Rückgabetyp (DataSet).
+Andernfalls müsste ein Konstrukt ersonnen werden, mehrere Variablen von der Main-Funktion zurückgeben zu lassen.
+\item Einfacher Aufruf der Main-Funktionen (ab 4 Parametern wird der Funktionsaufruf unübersichtlich\cite{parameterCount}). Statt 20 Parameter zu übergeben kann übersichtlich das DataSet zusammengebaut werden und als einziges Argument übergeben werden.
+\item Einfaches ``Weiterschleifen'' von DataSets zwischen mehreren PrePro-Programmen.
+Falls mehrere PrePro-Programme nacheinander ausgeführt werden kann bequem das Ausgabe-DataSet des ersten Programms als Eingabe-DataSet des zweiten Programms genommen werden.
+\end{itemize}
+
+\section{Kommentare}
+Kommentare sollen in der \ac{DSL} möglich sein.\\
+Einen Zeilen-Kommentar wird ein ``//'' vorangestellt.\\
+Ein Block-Kommentar wird mir ``/*'' und ``*/'' umschlossen.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \endinput

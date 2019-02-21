@@ -7,7 +7,8 @@ Daher soll die in dieser Arbeit entwickelte \ac{DSL} auf diesem Framework aufbau
 Die \ac{DSL} ist für das Vorprozessieren von Daten für maschinelles Lernen.
 Für die \ac{DSL} kommt ein Compiler oder Interpreter in Frage.
 Ein Transpiler ist nicht möglich, da es keine in der Praxis verwendete Sprache für das Vorprozessieren der Daten gibt, in die übersetzt werden kann.
-In der \tab{tab:Vorteile_Compiler_Interpreter} werden die Implementierungsmöglichkeiten mittels Compiler und Interpreter gegenüber gestellt.
+In der \tab{tab:Vorteile_Compiler_Interpreter} werden die Implementierungsmöglichkeiten mittels Compiler und Interpreter gegenüber gestellt.\\
+Wegen der Vorteile (vornehmlich das Debugging) von Interpretern im Vergleich zu Compiler soll PrePro als Interpreter implementiert werden.
 
 \begin{table}[H]
 	\centering
@@ -21,17 +22,14 @@ In der \tab{tab:Vorteile_Compiler_Interpreter} werden die Implementierungsmögli
 	\label{tab:Vorteile_Compiler_Interpreter}
 \end{table}
 
-TODO Antlr
-TODO Graal + Truffle
-
 \section{Verwendete Technologien}
 Die \ac{DSL} wird mittels einem Interpreter ausgeführt.
 Dieser baut auf folgenden Technologien auf:
 \begin{description}
 	\item{\textbf{ND4J}}\newline Matrizen-Berechnungen werden mittels dem ND4J-Framework durchgeführt.
 	\item{\textbf{Java}}\newline Das ND4J-Framework ist in der Programmiersprache Java verfügbar. Damit der Interpreter es verwenden kann, wird in dieser Sprache geschrieben.
-	\item{\textbf{Graal}}\newline TODO
-	\item{\textbf{Antlr}}\newline Antlr v4 wird für das Parser der eingegebenen Programme verwendet.
+	\item{\textbf{Groovy}}\newline Groovy ist eine Sprache, die auf Java aufbaut und kompatibel ist. Sie unterstützt zum Beispiel dynamic dispatching\footnote{\url{https://en.wikipedia.org/wiki/Dynamic_dispatch}}.
+	\item{\textbf{Antlr}}\newline Antlr in der Version 4 wird für das Parser der eingegebenen Programme verwendet. Für das Netbeans-Plugin wird Antlr in der Version 3 verwendet.
 \end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

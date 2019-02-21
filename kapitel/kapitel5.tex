@@ -1,14 +1,40 @@
 
 \chapter{Implementierung der DSL}
 
-\section{Interpreter oder Compiler?}
-=> Interpreter
+\section{Lexer \& Parser}
+Lexer und Parser werden beide von einer ANTLR4 Grammatik erzeugt.
+
+
+\section{Typsystem}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figures/typsystem}
+	\caption{Typsystem von PrePro}
+	\label{fig:Typsystem}
+\end{figure}
+Das Typsystem von PrePro ist in \abb{fig:Typsystem} dargestellt.
+Alle Variablen erben von er abstrakten Klasse \texttt{Variable}.
+Es gibt die Untertypen \texttt{Vector}, \texttt{Marix}, \texttt{Scalar} und \texttt{Constant}.
+Die Unterklassen \texttt{Vector} und \texttt{Matrix} haben wiederum Unterklassen für drei- und vierelementige Varianten.
+Diese Unterklassen sind wichtig, da z.B. eine \texttt{Matrix3} mit einem \texttt{Vector3} multipliziert werden kann, allerdings nicht mit einem \texttt{Vector4}.\\
+In der abstrakten Klasse \texttt{Variable} sind die Funktionen \texttt{add}, \texttt{sub}, \texttt{mul} und \texttt{div} definiert.
+Werden die Funktionen auf der abstrakten Klasse aufgerufen, werfen sie eine Exception, dass die mathematische Operation nicht definiert sei.\\
+Die Unterklassen haben nun die Möglichkeit, Operationen mit anderen Typen zu definieren.
+Mittels Polymorphie und dynamic dispatching wird bei einer arithmetischen Operation die passende Funktion gesucht.
+Falls keine passende Funktion wird die allgemeine - in der abstrakten Klasse definierte - Funktion verwendet, und daraufhin eine Exception geworfen, dass die mathematische Operation nicht definiert sei.
+
+\subsection{Darstellung der Typen in Java}
+Alle Typen werden als \texttt{INDArray} von \texttt{ND4J} dargestellt.\\
+Die Unterklassen besitzen einen Konstruktor, der ein \texttt{INDArray} übergeben bekommt.
+In den Konstruktoren wird jeweils geprüft, ob die Dimensionen dem entsprechenden Typ entsprechen (z.B eine Matrix4 muss eine 4x4-Matrix übergeben bekommen).
+Die einzige Ausnahme bildet der Typ ``Constant'', dieser bietet zusätzlich einen Konstruktur, dem ein \texttt{double} übergeben werden kann.
+Intern wird aus dem \texttt{double} ein \texttt{INDArray} erzeugt.
 
 \section{Grundrechenarten}
 Bei der Darstellung der Zahlen im Speicher wird für jede Zahl ein Double verwendet.
 Das erhöht die Genauigkeit gegenüber einem float und erspart Konvertierungen zwischen Ganz- und Fließzahlen.
 Grundrechenarten sind die Addition, Subtraktion, Multiplikation und Division von Matrizen.
-Sie Operationen sind elementweise und werden direkt von ND4J zur Verfügung gestellt.
+Sie Operationen sind elementweise und werden direkt von ND4J zur Verfügung gestellt und können aufgerufen werden.
 
 \section{Kreuzprodukt}
 Anders als die vier Grundarten aus dem vorherigen Abschnitt wird das Kreuzprodukt von ND4J nicht als Operation angeboten.
@@ -81,7 +107,7 @@ private Vector3 crossProductSubArray(Vector3 left, Vector3 right) {
 \end{lstlisting}
 \end{minipage}
 
-\section{Vergleich der Implementierungen}
+\section{Vergleich der Implementierungen für Kreuzprodukt}
 Beide Impelemtierungsmöglichkeiten haben Vor- und Nachteile.
 Diese sind in \tab{tab:Vorteile_Kreuzprodukt_Implementierungen} aufgeführt.
 \begin{table}[H]

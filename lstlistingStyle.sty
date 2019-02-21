@@ -17,6 +17,23 @@
   keywords={private, INDArray, double, int, new, for, return, Vector3}
 }
 
+\lstdefinelanguage{prepro}{
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
+%  basicstyle=\fontsize{9}{11}\ttfamily,
+  moredelim=[il][\textcolor{pgrey}]{$.$},
+  moredelim=[is][\textcolor{pgrey}]{\%\%}{\%\%},
+  frame=single,
+  tabsize=2,
+  keywords={function, returns, import, export, vec3, mat}
+}
+
 \lstdefinelanguage{docker}{
 	numbers=left,
 	keywords={FROM, RUN, COPY, ADD, ENTRYPOINT, CMD,  ENV, WORKDIR, EXPOSE, LABEL, USER, VOLUME, STOPSIGNAL, ONBUILD, MAINTAINER},
