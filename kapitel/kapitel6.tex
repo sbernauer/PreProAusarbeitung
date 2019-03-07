@@ -1,5 +1,112 @@
 
+\addtocontents{toc}{\protect\newpage}
 \chapter{Integration in NetBeans-IDE}
+
+Syntaxhervorhebung und das Anzeigen von Syntaxfehlern erleichtert die Entwicklung von Programmen.
+Deshalb soll dieser Komfort dem Nutzer zur Verfügung gestellt werden.\\
+Für die Implementierung gibt es zwei Möglichkeiten:
+\begin{enumerate}
+\item Implementierung eines eigenen Editors, der den Support für Syntaxhervorhebung und -fehler bietet.\\
+Vorteil: Man ist nicht auf bestehende Editoren angewiesen, und kann jedes Detail so gestalten, wie man es möchte.\\
+Nachteil: Alles muss von Grund auf implementiert werden.
+\item Wiederverwendung eines bestehenden Editors (z.B. Netbeans), und Hinzufügen des Supports.\\
+Vorteil: Der Nutzer kann so einfacher zwischen verschiedenen Programmiersprachen wechseln, ohne den Editor wechseln zu müssen.\\
+Nachteil: Der Editor muss eine Möglichkeit bieten den Support hinzuzufügen.
+Auch findet ein geringer Overhead statt, da man den Editor erst entsprechend konfigurieren und ist gezwungen die Schnittstellen zu nutzen - egal ob diese möglicherweise umständlich zu verwenden oder veraltet sind.
+\end{enumerate}
+Aufgrund der einfacheren Benutzbarkeit und dem Verzicht einer Implementierung von Grund auf wurde die zweite Variante verwendet.
+Hierfür wurde ein Editor gesucht, der Support für \acp{DSL} bietet.
+Die Wahl fiel auf Netbeans, da für die Plattform eine große Community mit verschiedenen Tutorials und Beispielen existiert.\footnote{Die Community ist zu finden unter \url{https://netbeans.org/community/index.html}}
+
+\section{Syntaxhervorhebung}
+Für die Syntaxhervorhebung in Netbeans gab es mehrere Tutorials.
+Die älteren der Tutorials nutzen \texttt{javacc} als Lexer und Parser.
+Die neueren Tutorials verwendeten hingegen \texttt{Antlr}.
+Als Grundlage wurde das Tutorial unter \cite{netbeansSyntax} sowie Anmerkungen dazu unter \cite{netbeansSyntaxNotes} aus dem Jahr 2009 verwendet.
+Da das Tutorial und die Anmerkungen dazu aus dem Jahr 2009 stammt, ist es nicht mehr aktuell.
+Dadurch war die Umsetzung nicht so einfach wie anfangs angenommen.\\
+Das Tutorial verwendet \texttt{Antlr} in der Version 3, zum Zeitpunkt des Schreibens ist die aktuelle Version 4.7.2, welche nicht abwärtskompatibel ist.
+Es wurde zwar versucht das Tutorial mit der neueren Version von \texttt{Antlr} umzusetzen, was jedoch gescheitert ist, da sonst Internas hätten umgeschrieben werden müssen, da einige Funktionen aus der Version 3 nicht mehr in der Version 4 verfügbar sind.\\
+
+\subsection{Neue Antlr-Grammatik für Syntax}
+Da der PrePro-Interpreter \texttt{Antlr} in der Version 4 verwendet, war es aufgrund der fehlenden Abwärtskompatibilität nicht möglich, die gleiche Grammatik für Interpreter und die Syntax-Features zu verwenden (welche Version 3 verwenden).\\
+Das ist nicht so schlimm, wie es auf den ersten Blick wirkt, da die Grammatiken andere Anwendungsfälle abbilden:\\
+\textbf{Interpreter-Grammatik:} Die Grammatik prüft nicht nur, ob die Syntax korrekt ist, sondern baut auch den \ac{AST} auf.
+Dies geschieht in Java-Code und stellt einen Großteil der Grammatik dar.\\
+\textbf{Syntax-Grammatik:} Diese Grammatik prüft nur die Syntax, es wird nichts aufgebaut, somit ist auch kein Java-Code vorhanden.
+Allerdings müssen alle Symbole als Token mit Namen exportiert werden.
+Zum Beispiel darf das Symbol ``,'' nicht als unbenanntes Token exportiert werden, sondern es muss einen Namen (in diesem Fall: ``COMMA'' besitzen.)
+Das hat zur Folge, dass in den einzelnen Grammatik-Regeln nicht einfach das Symbol ``,'' verwendet werden darf, sondern immer ``COMMA'' geschrieben werden muss.\\
+Damit die Unterschiede klarer werden sind in \code{lst:diffInterpreterSyntax1} und \code{lst:diffInterpreterSyntax1} beispielhafte Grammatik-Regeln abgebildet.
+Erkennbar sind folgende Unterschiede:
+\begin{itemize}
+\item Die Regeln der Syntax-Grammatik sind deutlich kürzer.
+Die Interpreter-Grammatik hat 225 Zeilen, wobei hiervon 170 Zeilen die Grammatik-Regeln beinhalten.\\
+Die Syntax-Grammatik hat 105 Zeilen, wobei hiervon 36 Zeilen die Grammatik-Regeln beinhalten.\\
+Die Regeln sind im Schnitt also fast 5-mal so groß in der Interpreter-Grammatik als in der Sytax-Grammatik.
+\item Die Regeln der Sytax-Grammatik fokussieren sich auf das Wesentliche.
+\item Jedes Literal in der Syntax-Grammatik hat sein eigenes, benanntes Token.
+\end{itemize}
+
+%\begin{minipage}{\linewidth}
+\begin{lstlisting}[label={lst:diffInterpreterSyntax1}, caption={Grammatik-Regel ``exportDefinitions'' Interpreter vs Syntax}, captionpos=b]
+>>> INTERPRETER:
+exportDefinitions returns [List<String> result]:
+                              { $result = new ArrayList<>(); }
+IDENTIFIER                    { $result.add($IDENTIFIER.text); }
+(
+    ','
+    IDENTIFIER                { $result.add($IDENTIFIER.text); }
+)*
+;
+
+>>> SYNTAX:
+exportDefinitions: IDENTIFIER (COMMA IDENTIFIER)*;
+\end{lstlisting}
+%\end{minipage}
+
+%\begin{minipage}{\linewidth}
+\begin{lstlisting}[label={lst:diffInterpreterSyntax2}, caption={Grammatik-Regel ``functionCallStatement'' Interpreter vs Syntax}, captionpos=b, breaklines=true, postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
+>>> INTERPRETER:
+functionCallStatement returns [FunctionCallNode result]:
+IDENTIFIER
+'('                      { List<ExpressionNode> expressionList = new ArrayList<>(); }
+(
+    expression           { expressionList.add($expression.result); }
+    (
+        ',' expression   { expressionList.add($expression.result); }
+    )*
+)?
+')'                      { $result = new FunctionCallNode($IDENTIFIER.text, expressionList); }
+;
+
+>>> SYNTAX:
+functionCallStatement: IDENTIFIER LEFTPAREN (expression (COMMA expression)*)? RIGHTPAREN;
+\end{lstlisting}
+%\end{minipage}
+
+\subsection{Umsetzung}
+TODO
+
+\subsection{Pflege der Grammatiken}
+Aufgrund der aktuellen Implementierung mittels zwei separaten Grammatiken müssen beide Grammatiken gepflegt werden, es findet also ein geringer Overhead statt.\\
+Empfehlenswert ist es, seine Änderung in der Interpreter-Grammatik durchzuführen, und erst ganz am Schluss die Änderungen in die Syntax-Grammatik zu übernehmen. Die ist wichtig, damit die Änderungen auch syntaktisch in dem Plugin unterstützt werden.\\
+Dieses Vorgehen wurde schon mehrfach selbst angewandt und stellte keine Problem dar, da meist nur eine Zeile in der Syntax-Grammatik geändert werden musste. Dies ist möglich durch die kompakte Schreibweise in der Syntax-Grammatik.
+
+\subsection{Mögliche Verbesserungen}
+Das Plugin verwendet aktuell Antlr in der Version 3 für den Syntax-Support und sollte auf die neuere Version Antlr 4 aktualisiert werden.\\
+Dies ist allerdings nicht ohne Probleme möglich, da Funktionen, die in dem Tutorial \cite{netbeansSyntax} verwendet werden, in der neueren Version von Antlr nicht mehr verfügbar sind.\\
+Wenn dieser Schritt abgeschlossen ist, können die unterschiedlichen Grammatiken - für den Interpreter und die Syntax - zusammengeführt werden.
+Das erschwert zwar in geringem Maß die Lesbarkeit - z.B. muss jedes Token einen Namen bekommen - erleichtert aber die Pflege, da nur noch eine statt zwei Grammatiken gepflegt werden müssen.
+
+\section{Anzeigen von Syntaxfehler}
+Neben dem Hervorheben der verschiedenen Schlüsselwörter und -typen ist es für den Programmierer auch nützlich auf Fehler in seiner Syntax unmittelbar hingewiesen zu werden.
+Die verhindert den Effekt, dass eine große Menge Code geschrieben wird, und anschließend festgestellt wird, dass in der ersten Zeile ein Syntaxfehler ist.
+Nun kann es durch den langen Code sein, dass die Erinnerung an die erste Zeile verblasst und, und eine erneute Einarbeitung in die erste Zeile nötig ist, um den Syntaxfehler zu finden.\\
+Wird allerdings der Fehler sofort hervorgehoben, kann man ihn beheben, solange man die Zeile noch im Arbeitsgedächtnis hat, eine Einarbeitung entfällt.\\
+Die Umsetzung wurde auch an das Tutorial aus \cite{netbeansSyntax} angelehnt.
+
+\section{Debugging}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \endinput

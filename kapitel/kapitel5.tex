@@ -4,6 +4,28 @@
 \section{Lexer \& Parser}
 Lexer und Parser werden beide von einer ANTLR4 Grammatik erzeugt.
 
+\section{Abstrakter Syntaxbaum}
+Ein \ac{AST} ist ein Baum, der bei dem Parsen der \ac{DSL} aufgebaut wird.
+Dieser wird anschließend von dem Interpreter abgearbeitet / ausgeführt.\\
+Der Baum besteht aus Knoten, die in einer Baumstruktur an einer Wurzel hängen.
+In PrePro gibt es eine Vielzahl an verschiedener Knoten-Typen.\\
+Die Klassenhierarchie ist in \abb{fig:NodesHierachy} abgebildet.
+Als oberstes Element ist das Interface \texttt{PreProNode} definiert.
+Die \texttt{MainNode} ist der Wurzelknoten des \ac{AST}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figures/uml_nodes}
+	\caption{Die Knoten-Klassenhierarchie}
+	\label{fig:NodesHierachy}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figures/parseTree}
+	\caption{Beispielhafter \ac{AST}}
+	\label{fig:AST}
+\end{figure}
 
 \section{Typsystem}
 \begin{figure}
@@ -29,6 +51,10 @@ Die Unterklassen besitzen einen Konstruktor, der ein \texttt{INDArray} übergebe
 In den Konstruktoren wird jeweils geprüft, ob die Dimensionen dem entsprechenden Typ entsprechen (z.B eine Matrix4 muss eine 4x4-Matrix übergeben bekommen).
 Die einzige Ausnahme bildet der Typ ``Constant'', dieser bietet zusätzlich einen Konstruktur, dem ein \texttt{double} übergeben werden kann.
 Intern wird aus dem \texttt{double} ein \texttt{INDArray} erzeugt.
+
+\section{FunctionTable}
+
+\section{SymbolTable}
 
 \section{Grundrechenarten}
 Bei der Darstellung der Zahlen im Speicher wird für jede Zahl ein Double verwendet.
