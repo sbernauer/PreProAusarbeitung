@@ -107,6 +107,44 @@ Wird allerdings der Fehler sofort hervorgehoben, kann man ihn beheben, solange m
 Die Umsetzung wurde auch an das Tutorial aus \cite{netbeansSyntax} angelehnt.
 
 \section{Debugging}
+Debugging bezeichnet den Prozess ein Programm schrittweise auszuführen, um Fehler in dem Programmablauf zu finden.
+Um dem Nutzer eine einfachere Benutzung von PrePro zu bieten sollte ihm eine Debugging-Möglichkeit geboten werden.\\
+Es gibt verschiedene Möglichkeiten das Debugging grafisch zu gestalten:
+\begin{enumerate}
+\item Debugging in einer Kommandozeile, mit der Möglichkeit Befehle einzugeben
+\item Debugging in einem grafisch aufwändigen Editor.
+\end{enumerate}
+
+\subsection{Debugging mittels Kommandozeile}
+Bei dem Debugging mittels der Kommandozeile stehen verschiedene Befehle bereit.
+Diese sind in \tab{fig:Commands_CLI_Debugger} aufgeführt.\\
+Die Implementierung ist dafür relativ einfach, da keine Oberfläche entwickelt werden muss, sondern nur Tastatureingaben eingelesen werden müssen.
+Die Ausgabe erfolgt textuell.\\
+Der Nachteil für den Nutzer besteht darin, dass die aktuelle Zeile nicht hervorgehoben wird.
+Dafür wird jederzeit die aktuelle Zeile angezeigt.
+
+\begin{figure}
+	\centering
+	\begin{tabular}{| m{4cm} | m{9cm} |}
+	\hline
+	step & Springe über die aktuell ausgewählt Zeile zur nächsten Zeile \\ \hline
+	vars & Liste alle aktuell existierenden Vriablen mitsamt ihrem Inhalt (String-Repräsentation) auf \\ \hline
+	exit & Beende den Debugger \\ \hline
+	eval & Führe den Code aus, der als Parameter dem Befehl mitgegeben wird \\ \hline
+	\end{tabular}
+	\caption{Mögliche Befehle bei dem Kommandozeilen-Debugger}
+	\label{fig:Commands_CLI_Debugger}
+\end{figure}
+
+\subsection{Debugging im grafischen Editor}
+In dem Editor wird die aktuelle Zeile hervorgehoben und zusätzlich weitere Informationen zum Programmablauf angezeigt.
+Der Nutzer kann so viel bequemer debuggen.
+Der grafische Editor hat den Nachteil einer deutlich aufwändigeren Implementierung.
+Hier gilt allerdings das Gleiche, wie bei dem Syntax-Support:
+Die Implementierung reduziert sich deutlich, wenn auf bestehende Editoren mit dem Support für benutzerdefiniertes Debugging aufgebaut werden kann.
+Da der Support für die Syntax schon in NetBeans umgesetzt wurde, ist es an dieser Stelle sinnvoll auch NetBeans zu verwenden, da somit alle Funktionalität für den Nutzer in einem Editor gebündelt ist.\\
+Eine Anleitung für das Implementieren eines eigenen Debuggers ist unter \cite{netbeansDebugger} zu finden.
+Die konkrete Implementierung sei zukünftigen Arbeiten überlassen.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \endinput
