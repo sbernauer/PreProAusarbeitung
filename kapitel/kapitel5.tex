@@ -52,15 +52,128 @@ In den Konstruktoren wird jeweils geprüft, ob die Dimensionen dem entsprechende
 Die einzige Ausnahme bildet der Typ ``Constant'', dieser bietet zusätzlich einen Konstruktur, dem ein \texttt{double} übergeben werden kann.
 Intern wird aus dem \texttt{double} ein \texttt{INDArray} erzeugt.
 
+\section{Implementierung der Operationen auf den Variablen-Typen}
+In dem vorherigen Abschnitt wurden verschiedene Variablen-Typen herausgearbeitet.
+Diese sind in \abb{fig:Typsystem} abgebildet.\\
+Zwischen manchen der Typen sind Operationen, wie z.B. das Kreuzprodukt definiert.
+Manche Typen können allerdings nicht sinnvoll kombiniert werden, z.B. eine Matrix3 und eine Matrix4.
+Diese Operationen müssen in Java implementiert werden.
+Ein erster Ansatz ist es, jedem Variablen-Typ die möglichen Operationen der Java-Klasse hinzuzufügen.
+Dieser Ansatz wurde in dem \code{lst:Operationen_Matrix4} beispielsweise für die \texttt{Matrix4}-Klasse angewandt. Die Methoden sind jedoch lange nicht vollzählig.
+\begin{lstlisting}[escapeinside={\%*}{*)},language=java, label={lst:Operationen_Matrix4}, caption={Implementierung der Operatoren in der Java-Klasse Matrix4}, captionpos=b]
+%*
+\begin{minted}[frame=single,framesep=10pt]{java}
+public class Matrix4 {
+
+	// same for sub, mul and div
+	public Matrix4 add(Matrix4 right) {
+		return new Matrix4(/* ... */);
+	}
+
+	// same for sub, mul and div
+	public Matrix4 add(Constant right) {
+		return new Matrix4(/* ... */);
+	}
+
+	// Cross-Product
+	public Vector4 mul(Vector4 right) {
+		return new Vector4(/* ... */);
+	}
+}
+\end{minted}
+\end{lstlisting}
+Es ist zu erkennen, dass sehr viele Funktionen angelegt werden müssen.
+Damit der Java-Compiler korrekt compilieren kann, müssen diese Funktionen in der Basisklasse \texttt{Variable} definiert werden und in den Unterklassen überschrieben werden.
+Dies hat den Vorteil, dass in der Basis-Funktion in der Basis-Klasse \texttt{Variable} als normales Verhalten eine Fehlerausgabe erzeugt, in der gesagt wird, dass diese Operation auf diesen Typen nicht möglich ist.
+In den Subklassen werden nun die Operatoren überschrieben und so das Standardverhalten der Fehlermeldung überschrieben.\\
+Dieser Ansatz hätte zusätzlich den Vorteil, dass man Operatoren auch auf Klassen in der Mitte der Hierarchie - z.B. ein allgemeiner Vektor - anwenden kann. So kann die Vektoraddition an einer zentralen Stelle für \texttt{Vector3} und \texttt{Vector4} erfolgen.\\
+
+\subsection{Dynamic Dispatching}
+In der Theorie würde der aufgeführte Ansatz perfekt funktionieren.\\
+Warum in der Theorie?
+Dies allgemeine Problem wird in \code{lst:Dynamic_Dispatching} ersichtlich.
+
+\begin{lstlisting}[escapeinside={\%*}{*)},language=java, label={lst:Dynamic_Dispatching}, caption={Java-Code zur Illustrierung von Dynamic Dispatching}, captionpos=b]
+%*
+\begin{minted}[frame=single,framesep=10pt]{java}
+public class Main {
+
+    public static void main(String[] args) {
+        Dog dog1 = new Dog();
+        test(dog1);
+        Animal dog2 = new Dog();
+        test(dog2);
+    }
+
+    private static void test(Animal a) {
+        System.out.println("I'm an animal");
+    }
+
+    private static void test(Dog g) {
+        System.out.println("I'm an dog");
+    }
+}
+
+class Animal { }
+
+class Dog extends Animal { }
+\end{minted}
+\end{lstlisting}
+Das erwartete Verhalten wäre zwei Mal die Ausgabe ``I'm a dog''.\\
+Die tatsächliche Ausgabe ist aber ``I'm a dog'' gefolgt von ``I'm a animal''.\\
+Warum das?
+Java entscheidet schon zur Kompilierzeit, welche Funktion aufgerufen wird.
+Da zur Kompilierzeit noch nicht klar sein kann, welcher genaue Typ sich in der Variable \texttt{dog2} befindet, wird die die am besten passende Funktion für den deklarierten Typ der Variable verwendet. In diesem Fall ist die Variable \texttt{dog2} als \texttt{Animal} deklariert, deshalb wird die Funktion mit dem Parameter-Typ \texttt{Animal} ausgewählt.\\
+Die Auswahl der Methode zur Laufzeit anhand des konkreten Typs statt zur Kompilierzeit nennt man \texttt{Dynamic Dispatching}.\\
+
+\subsection{Groovy}
+Eine Programmiersprache, die Dynamic Dispatching unterstützt ist Groovy.
+Groovy wurde 2007 offiziell herausgegeben und ist syntax-kompatibel zu Java.
+Der Code aus \code{lst:Dynamic_Dispatching} kann 1:1 in Groovy ausgeführt werden und erzeugt dort die erwartete Ausgabe von zwei mal ``I'm a dog''.
+Groovy sucht sich die aufzurufende Funktion zur Laufzeit anhand des konkreten Typs raus.\\
+Da Groovy syntax-kompatibel zu Java ist, wurde Groovy in das PrePro-Projekt aufgenommen.
+Bestehende Klassen konnten übernommen werden.
+Es wird allerdings darauf geachtet, dass der geschriebene Code Groovy (offensichtlich) und Java-kompatibel ist.
+Dadurch wird die Lesbarkeit erhöht, da keine ständiger Wechsel zwischen Java und Groovy-Syntax notwendig ist.
+
+\subsection{Bauen von Java und Groovy Projekten}
+Da die \texttt{ND4j}-Bibliothek in Java geschrieben ist, wird versucht - sofern möglich - alles in Java zu schreiben.
+Groovy wird nur in den Klassen verwendet, wo es benötigt wird.
+Hierfür ist zu beachten, dass dies nicht nur die Klassen mit den Variable-Typen selber sind, sondern alle Klassen, die die Funktionen mittels Dynamic Dispatching aufrufen wollen.
+Dadurch entsteht ein Projekt, welches Java und Groovy-Sourcecode beinhaltet.
+Das PrePro-Projekt wird mittels Maven verwaltet und kompiliert.
+Maven musste dafür das Plugin \texttt{org.codehaus.gmavenplus.gmavenplus-plugin} hinzugefügt werden, welches das Compilieren übernimmt.
+
 \section{FunctionTable}
+Ein PrePro-Programm besteht aus mehreren Funktionen.
+Die Funktionen werden - auf den Namen indiziert - in einer FunctionTable gespeichert.
+Aktuell ist diese als \texttt{HashMap<String, Function>} implementiert, weshalb Funktionen anhand ihrem Namen identifiziert werden. 
+Damit ist aktuell kein Überladen von Funktionen möglich.
+Falls ein Überladen ermöglicht werden soll, muss statt dem Namen ein Tupel aus Namen und Signatur der Funktion verwendet werden.
+Auch muss bei dem Aufruf einer Funktion nicht nur nach dem Namen, sondern auch der Signatur geschaut werden.\\
+Aufgrund dem Aufwand der Implementierung wurde dies in der ersten Version von PrePro nicht umgesetzt.
+Die Sprache wurde jedoch mit dem Gedanken im Hinterkopf entwickelt, sodass die oben genannten Maßnahmen umgesetzt werden können und ein Überladen möglich wird.
 
 \section{SymbolTable}
+In einem PrePro-Programm können Variablen als Zwischenspeicher verwendet werden.
+Die Symboltabelle ist bei dem PrePro-Interpreter ein Speicherplatz für diese Variablen.
+Die Symboltabelle ist als \texttt{HashMap<String, Variable>} implementiert.
+Aus ihr können die aktuellen Werte der Variablen gelesen und geschrieben werden.
+Durch Auslesen des Typs, der in der Symboltabelle gespeichert ist, kann der Typ der Variable ermittelt werden.\\
+Jede Funktion erstellt zu Beginn der Ausführung der Funktion eine Symboltabelle und fügt die übergebenen Parameter hinzu.
+Anschließend wird auf der Symboltabelle die Funktion abgearbeitet.
+Ist die Funktion fertig abgearbeitet wird der Rückgabewert aus der Symboltabelle berechnet, die Symboltabelle wird anschließend verworfen.
+Hat eine Funktion keinen Rückgabewert, entfällt der Berechnungsschritt für die Rückgae dementsprechend.
+\\
+Es ist möglich eine bereits gefüllte Symboltabelle bei dem Start eines PrePro-Programms mitzugeben.
+Diese steht dann in der Main-Funktion direkt zur Verfügung.
+So kann z.B. eine Symboltabelle mit Konstanten einmal aufgebaut und dann von mehreren PrePro-Programmen wiederverwendet werden.
 
 \section{Grundrechenarten}
 Bei der Darstellung der Zahlen im Speicher wird für jede Zahl ein Double verwendet.
 Das erhöht die Genauigkeit gegenüber einem float und erspart Konvertierungen zwischen Ganz- und Fließzahlen.
 Grundrechenarten sind die Addition, Subtraktion, Multiplikation und Division von Matrizen.
-Sie Operationen sind elementweise und werden direkt von ND4J zur Verfügung gestellt und können aufgerufen werden.
+Diese Operationen sind elementweise und werden direkt von ND4J zur Verfügung gestellt und können aufgerufen werden.
 
 \section{Kreuzprodukt}
 Anders als die vier Grundarten aus dem vorherigen Abschnitt wird das Kreuzprodukt von ND4J nicht als Operation angeboten.
@@ -83,9 +196,10 @@ Für die Berechnung der Elemente wird mittels einer For-Schleife über alle Zeil
 In jeder Zeile werden die 3 Werte des entstehenden Ergebnisvektors berechnet und in das Double-Array gespeichert.
 Abschließend wir das Double-Array in eine Matrix mit den Dimensionen [<Anzahl Zeitelemente> x drei] konvertiert und durch eine Vector3-Wrapper-Klasse als Vector mit 3 Werten gekennzeichnet.
 Der Algorithmus ist in \code{lst:Kreuzprodukt_For} dargestellt.
-\\\\
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[language=java, label={lst:Kreuzprodukt_For}, caption={Implementierung Kreuzprodukt mittels for-Schleife}, captionpos=b]
+
+\begin{lstlisting}[escapeinside={\%*}{*)},language=java, label={lst:Kreuzprodukt_For}, caption={Implementierung Kreuzprodukt mittels for-Schleife}, captionpos=b]
+%*
+\begin{minted}[frame=single,framesep=10pt,breaklines]{java}
 private Vector3 crossProduct(Vector3 left, Vector3 right) {
     INDArray a = left.getNdArray();
     INDArray b = right.getNdArray();
@@ -100,12 +214,13 @@ private Vector3 crossProduct(Vector3 left, Vector3 right) {
     }
     return new Vector3(Nd4j.create(result, new int[]{size, 3}));
 }
+\end{minted}
 \end{lstlisting}
-\end{minipage}
 
 \subsection{Implementierung Kreuzprodukt mittels Subarrays}
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[language=java, label={lst:Kreuzprodukt_Subarray}, caption={Implementierung Kreuzprodukt mittels for-Schleife}, captionpos=b]
+\begin{lstlisting}[escapeinside={\%*}{*)},language=java, label={lst:Kreuzprodukt_Subarray}, caption={Implementierung Kreuzprodukt mittels for-Schleife}, captionpos=b]
+%*
+\begin{minted}[frame=single,framesep=10pt,breaklines]{java}
 private Vector3 crossProductSubArray(Vector3 left, Vector3 right) {
     INDArray a = left.getNdArray();
     INDArray b = right.getNdArray();
@@ -130,8 +245,8 @@ private Vector3 crossProductSubArray(Vector3 left, Vector3 right) {
 
     return new Vector3(result);
 }
+\end{minted}
 \end{lstlisting}
-\end{minipage}
 
 \section{Vergleich der Implementierungen für Kreuzprodukt}
 Beide Impelemtierungsmöglichkeiten haben Vor- und Nachteile.

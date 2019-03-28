@@ -7,6 +7,8 @@
 *.idx
 *.log
 *.lof
+*.lol
+*.lot
 *.out
 *.run.xml
 *.synctex.gz
@@ -14,3 +16,5 @@
 *.xdy
 
 *-blx.bib
+
+_minted-bericht/

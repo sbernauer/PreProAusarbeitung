@@ -16,6 +16,9 @@
 \usepackage{bericht}
 \input{lstlistingStyle.sty}
 
+\usepackage{minted}
+\usemintedstyle[java]{friendly}
+
 % Hurenkinder und Schusterjungen verhindern
 \clubpenalty = 10000
 \widowpenalty = 10000
@@ -86,6 +89,15 @@ TODO
 	\tableofcontents           % Inhaltsverzeichnis hier ausgeben
 }
 
+\listoffigures             % Liste der Abbildungen
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+
+\listoftables
+\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+
+\lstlistoflistings
+\addcontentsline{toc}{chapter}{Liste der Codefragmente}
+
 \input{kapitel/kapitel1}
 \input{kapitel/kapitel2}
 \input{kapitel/kapitel3}
@@ -99,9 +111,6 @@ TODO
 \input{kapitel/anhang}
 
 \include{abk}              % Abkürzungsverzeichnis
-
-\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
-\listoffigures             % Liste der Abbildungen
 
 %\chapter*{Literaturverzeichnis}
 \addcontentsline{toc}{chapter}{Literaturverzeichnis}
