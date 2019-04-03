@@ -3,37 +3,104 @@
 
 \section{Lexer \& Parser}
 Lexer und Parser werden beide von einer ANTLR4 Grammatik erzeugt.
+Hierfür wird eine kombinierte Grammatik verwendet, die zugleich Lexer und Parser erzeugt.\\
+\textcolor{red}{TODO Mehr beschreiben.}
 
 \section{Abstrakter Syntaxbaum}
-Ein \ac{AST} ist ein Baum, der bei dem Parsen der \ac{DSL} aufgebaut wird.
+Ein \ac{AST} ist ein Baum, der bei dem Parsen der Grammatik der \ac{DSL} aufgebaut wird.
 Dieser wird anschließend von dem Interpreter abgearbeitet / ausgeführt.\\
 Der Baum besteht aus Knoten, die in einer Baumstruktur an einer Wurzel hängen.
-In PrePro gibt es eine Vielzahl an verschiedener Knoten-Typen.\\
-Die Klassenhierarchie ist in \abb{fig:NodesHierachy} abgebildet.
-Als oberstes Element ist das Interface \texttt{PreProNode} definiert.
-Die \texttt{MainNode} ist der Wurzelknoten des \ac{AST}.
+Jeder Knoten besitzt wiederum eine beliebige Anzahl an Kindknoten, diese kann auch 0 sein.
+Es gibt einen einzigen Wurzelknoten, an dem der gesamte \ac{AST} aufgehängt ist.\\
+In \abb{fig:AST_Example} ist ein beispielhafter \ac{AST} abgebildet.
+Es ist ersichtlich, dass ein \ac{AST} schnell unübersichtlich wird.
+Der in \abb{fig:AST_Example} abgebildete \ac{AST} wurde aus dem PrePro-Code in \code{lst:AST_Example} erzeugt.
+Trotz, dass der ursprüngliche Sourcecode überschaubar ist, ist der entstandene \ac{AST} fast nicht mehr lesbar.
+Dementsprechend groß werden die \acp{AST} bei längeren Programmen.
+Da die \acp{AST} allerdings von dem Parser aufgebaut und von dem Interpreter abgearbeitet werden bekommt der Nutzer diese nie zu Gesicht.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{figures/parseTree}
+	\caption{Beispielhafter \ac{AST}}
+	\label{fig:AST_Example}
+\end{figure}
 
-\begin{figure}
+\begin{lstlisting}[language=prepro, label={lst:AST_Example}, caption={PrePro-Code für den beispielhaften AST}, captionpos=b]
+function main() {
+    import vec3 p1;
+
+    vec3 result = double(p1);
+    result = result - p1;
+    result = result - p1;
+
+    export result;
+}
+
+function double(vec3 vec) returns vec3 {
+    return add(vec, vec);
+}
+
+function add(vec3 a, vec3 b) returns vec3 {
+    return a + b;
+}
+\end{lstlisting}
+Ein \ac{AST}-Baum besteht nicht aus lauter gleichen Knoten, sondern aus vielen verschiedenen Klassen.
+In PrePro gibt es eine Vielzahl an verschiedener Knoten-Typen, welche durch Java-Klassen repräsentiert werden.
+Die Klassenhierarchie ist in \abb{fig:NodesHierachy} abgebildet.\\
+Die dort aufgeführten Packages werden in den nachfolgenden Kapiteln im Detail erläutert.
+
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{figures/uml_nodes}
 	\caption{Die Knoten-Klassenhierarchie}
 	\label{fig:NodesHierachy}
 \end{figure}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{figures/parseTree}
-	\caption{Beispielhafter \ac{AST}}
-	\label{fig:AST}
-\end{figure}
+\subsection{Wurzelknoten}
+Die \texttt{MainNode} ist der Wurzelknoten des \ac{AST}.
+Alle Knoten müssen das \texttt{PreProNode}-Interface implementieren.
+Dieses ist ein leeres Interface, besitzt also keine Funktionen und dient nur dazu, alle Knoten als Knoten zu markieren.
+
+\subsection{Funktionen}
+In PrePro gibt es Funktionen.
+Direkt unter dem Wurzelknoten sind die Funktion-Knoten aufgehängt.
+Sonst hängt nichts an dem Wurzelknoten.
+Jede Funktion wird durch einen eigenen Knoten mitsamt Kindern dargestellt.
+Zum Starten des Programms wird die Main-Funktion aus dem \ac{AST} herausgesucht und gestartet.
+Eine Funktion hat Argumente, die ihr übergeben werden, diese müssen als Unterknoten in dem \ac{AST} gespeichert werden, damit sie bei der späteren Ausführung mit in die Funktion rein gegeben werden können.\\
+Es wurde eine allgemeines \texttt{Function}-Interface definiert, welches die Funktionen \texttt{String getFunctionName()} und\\ \texttt{Variable execute(Arguments arguments, FunctionTable functionTable)} besitzt.\\
+Das hat den Vorteil, dass das Interface unabhängig davon verwendet werden kann, ob die Funktion im Sourcecode definiert wurde oder von PrePro in Java-Code global zur Verfügung gestellt wurde.
+Im ersteren Fall erzeugt der Parser eine \texttt{FunctionNode}, im zweiten Fall wird die Funktion in reinem Java spezifiziert.
+Die \texttt{FuntionNode} führt die im Sourcecode angegebeben Statement-Nodes aus, die \texttt{CustomFunctionNode} ruft Java-Funktionen mittels Reflection auf.\\
+Alle eben genannten Klassen sind im \texttt{nodes.function} Package abgelegt.
+
+\subsection{Statements}
+Eine Funktion besteht aus einer Reihe von Statements.
+Eine Statement ist eine Anweisung, die ausgeführt wird und keine Rückgabe besitzt.
+Dies grenzt sie von Expressions ab, die einen Wert zurückgeben.
+Die Zeile \texttt{a = 1 + 2;} ist in ihrer Gesamtheit ein Statement, da es keine Rückgabe.\\
+Als allgemeines Statement wurde die abstrakte Klasse \texttt{StatementNode} definiert.
+Sie besitzt die Funktion\\ \texttt{void execute(SymbolTable symbolTable, FunctionTable functionTable)}
+Alle Klassen, die von dieser Klasse erben, müssen die \texttt{execute}-Funktion implementieren.
+Dazu zählt z.B. die \texttt{PrintStatementNode}, welche in der \texttt{execute}-Funktion einen Ausgabe auf dem Bildschirm erzeugen.
+
+\subsection{Expression}
+Die Teil \texttt{1 + 2} der Zeile \texttt{a = 1 + 2;} ist eine Expression.
+Eine Expression ist ein (mathematischer) Ausdruck, der ausgeführt werden kann und einen Rückgabewert besitzt.
+In einer Expression können neben mathematischen Operatoren, Konstanten, Variablen und Funktionsaufrufe beinhalten.
+Die abstrakte Superklasse \texttt{ExpressionNode} definiert die Funktion\\
+\texttt{Variable execute(SymbolTable symbolTable, FunctionTable functionTable)}.\\
+Wichtig ist an dieser Stelle, dass die Funktion im Gegensatz zu der Funktion bei der \texttt{StatementNode} einen Wert vom allgemeinen Typ \texttt{Variable} zurück liefert.
+Alle dafür nötigen Klassen sind in dem Package \texttt{nodes.expression} abgelegt.
+
+\subsection{Debugging}
+In PrePro ist zunächst eine rudimentäre Debugging-Möglichkeit eingebaut.
+Es ist möglich an einer beliebigen Zeile im Code ein \texttt{break;} zu schrieben.
+Bei der Ausführung stoppt der Interpreter in dieser Zeile und bietet eine kleine Kommandozeile um Variablen zu lesen und zu modifizieren.
+Dieses Break-Statement ist ein Statement, erbt also von der \texttt{StatementNode}.
+In der überschriebenen \texttt{execute}-Funktion wird auf die Eingabe und das Weiterspringen des Nutzers gewartet.
 
 \section{Typsystem}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{figures/typsystem}
-	\caption{Typsystem von PrePro}
-	\label{fig:Typsystem}
-\end{figure}
 Das Typsystem von PrePro ist in \abb{fig:Typsystem} dargestellt.
 Alle Variablen erben von er abstrakten Klasse \texttt{Variable}.
 Es gibt die Untertypen \texttt{Vector}, \texttt{Marix}, \texttt{Scalar} und \texttt{Constant}.
@@ -44,6 +111,13 @@ Werden die Funktionen auf der abstrakten Klasse aufgerufen, werfen sie eine Exce
 Die Unterklassen haben nun die Möglichkeit, Operationen mit anderen Typen zu definieren.
 Mittels Polymorphie und dynamic dispatching wird bei einer arithmetischen Operation die passende Funktion gesucht.
 Falls keine passende Funktion wird die allgemeine - in der abstrakten Klasse definierte - Funktion verwendet, und daraufhin eine Exception geworfen, dass die mathematische Operation nicht definiert sei.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{figures/typsystem}
+	\caption{Typsystem von PrePro}
+	\label{fig:Typsystem}
+\end{figure}
 
 \subsection{Darstellung der Typen in Java}
 Alle Typen werden als \texttt{INDArray} von \texttt{ND4J} dargestellt.\\
@@ -280,7 +354,8 @@ Die Ergebnisse sind in \tab{tab:Benchmark_Kreuzprodukt_Implementierung} festgeha
 		10.000.000 & 32358 (33594) & 442 (453) \\ \hline
 
 	\end{tabular}
-	\caption{Benchmark-Ergebnisse in ms der verschiedenen Implementierungsmöglichkeiten für das Kreuzprodukt. Die Messung ist nach 5 Durchläufen gemessen, die Zahl in Klammern gibt die Zeit des ersten Durchlaufs an.}
+	\caption[Benchmark-Ergebnisse der verschiedenen Implementierungsmöglichkeiten für das Kreuzprodukt]
+	{Benchmark-Ergebnisse der verschiedenen Implementierungsmöglichkeiten für das Kreuzprodukt. Die Messung ist nach 5 Durchläufen in Millisekunden gemessen, die Zahl in Klammern gibt die Zeit des ersten Durchlaufs an.}
 	\label{tab:Benchmark_Kreuzprodukt_Implementierung}
 \end{table}
 
