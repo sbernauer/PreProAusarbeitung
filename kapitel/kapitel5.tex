@@ -4,7 +4,9 @@
 \section{Lexer \& Parser}
 Lexer und Parser werden beide von einer ANTLR4 Grammatik erzeugt.
 Hierfür wird eine kombinierte Grammatik verwendet, die zugleich Lexer und Parser erzeugt.\\
-\textcolor{red}{TODO Mehr beschreiben.}
+Die Grammatik ist unter \texttt{src/main/java/de/sbernauer/prepro/parser} abgelegt.
+Mittels dem Befehl \texttt{./generateLexerAndParser.sh} im Root-Verzeichnis des Projekts werden die benötigten Klassen von ANTLR aus der Grammatik generiert.
+Dies ist notwendig, wenn Änderungen an der Grammatik durchgeführt wurden, damit diese in den Interpreter übernommen werden.
 
 \section{Abstrakter Syntaxbaum}
 Ein \ac{AST} ist ein Baum, der bei dem Parsen der Grammatik der \ac{DSL} aufgebaut wird.
@@ -58,8 +60,10 @@ Die dort aufgeführten Packages werden in den nachfolgenden Kapiteln im Detail e
 
 \subsection{Wurzelknoten}
 Die \texttt{MainNode} ist der Wurzelknoten des \ac{AST}.
+Er beinhaltet als Kinder alle Funktionen, die in dem Programm definiert sind.
+In Abbildung \abb{fig:AST_Example} sind die 3 Teilbäume ersichtlich, die den 3 Funktionen aus \code{lst:AST_Example} entsprechen.\\
 Alle Knoten müssen das \texttt{PreProNode}-Interface implementieren.
-Dieses ist ein leeres Interface, besitzt also keine Funktionen und dient nur dazu, alle Knoten als Knoten zu markieren.
+Dieses ist ein leeres Interface, besitzt somit keine Funktionen und dient nur dazu, alle Knoten als Knoten zu markieren.
 
 \subsection{Funktionen}
 In PrePro gibt es Funktionen.

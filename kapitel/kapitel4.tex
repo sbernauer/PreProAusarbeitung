@@ -116,6 +116,58 @@ Andernfalls müsste ein Konstrukt ersonnen werden, mehrere Variablen von der Mai
 Falls mehrere PrePro-Programme nacheinander ausgeführt werden kann bequem das Ausgabe-DataSet des ersten Programms als Eingabe-DataSet des zweiten Programms genommen werden.
 \end{itemize}
 
+\subsection{Optionale Imports}
+Es soll möglich sein, Importe in die Main-Funktion als optional zu kennzeichnen.
+Diese werden mit dem Schlüsselwort \texttt{optional} gekennzeichnet.
+Eine Beispiel mit optionalen Imports ist in \code{lst:OptionalImport} gegeben.
+Wenn die angegebene, zu importierende Variable nicht in dem DataSet existiert, wird keine Fehlermeldung erzeugt, sondern die Variable nicht importiert.\\
+\textbf{Achtung}: Wenn ein Import optional ist und die Variable nicht in dem DataSet existierte, wurde die Variable nicht geladen.
+Wenn nun in dem Programm versucht wird auf die Variable zuzugreifen wird eine Fehlermeldung erzeugt, dass die Variable nicht definiert sei.
+Deshalb ist es wichtig, die Gültigkeit der Variablen mittels der \texttt{exists}-Funktion zu prüfen, die im nächsten Kapitel vorgestellt wird.
+Wenn bei dem konstruieren des Ausführungspfad nicht aufgepasst wird, kann auf eine nicht geladene Variable zugegriffen werden.
+Das ist vergleichbar mit Nullpointern, die in eine Funktion hereingegeben werden können und zunächst mal auf \texttt{!= null} geprüft werden müssen.\\
+Deshal ist es definitiv nicht ratsam, alle Imports als optional zu kennzeichnen.
+
+\begin{lstlisting}[language=prepro, label={lst:OptionalImport}, caption={PrePro-Code mit optionalen Imports}, captionpos=b]
+function main() {
+	import vec3 p1, optional const quaternion_1, optional mat4 notPresent;
+
+	const isPresent = exists(p1);
+	const isNotPresent = foo();
+
+	export p1, quaternion_1, isPresent, isNotPresent;
+}
+
+function foo() returns const {
+	return exists(notPresent);
+}
+\end{lstlisting}
+
+\subsection{Die exists-Funktion}
+Mittels der Funktion \texttt{exists(<VariablenName>)} kann abgefragt werden, ob diese Variable geladen wurde.
+Wurde die Variable geladen, gibt die Funktion eine 1 zurück, andernfalls eine 0.
+Nach Abschluss der Berechnungen in \code{lst:OptionalImport} hat die Variable \texttt{isPresent} der Wert 1, die Variable \texttt{not Present} den Wert 0.
+Dies ist in folgendem Fall nützlich:
+In eine Programm werden zwei Koordinaten-Zeitreihen A und B gegeben.
+Im Idealfall möchte man auf dem Mittelpunkt zwischen diesen Werten arbeiten.
+Ist jedoch die Variable A nicht definiert, soll für die Berechnung B verwendet werden, und anders herum.
+Eine kleine Abweichung wird hier in Kauf genommen.
+Dieser Fall mag ungewöhnlich wirken, warum sollte man den Code nicht einfach an A oder B anpassen?
+Dies gibt mehr Sinn, wenn man ein Skript allgemeine verwenden möchte, und häufig genutzte Berechnungen auszulagern.
+In diesem Fall möchte man nicht jedes Mal die Berechnung aufs neue anpassen, sondern die Funktion einmal allgemein schreiben und die Ausführung abhängig von den gegebenen Daten machen.\\
+Das oben genannte Beispiel mit A und B könnte in etwa so ausgedrückt werden.
+Der gegebene Code in \code{lst:OptionalImportExample} ist nicht unbedingt mit dem PrePro-Interpreter ausführbar, soll aber das Prinzip verdeutlichen.\\
+Falls die Variable a und b beide existieren ergibt der Ausdruck \texttt{(exist(a) \&\& exist(b))} eine 1, andernfalls eine 0.\\
+\textcolor{red}{TODO, hier stimmt die Logik nicht!}
+
+\begin{lstlisting}[language=prepro, label={lst:OptionalImportExample}, caption={PrePro-Code mit optionalen Imports}, captionpos=b]
+import optional vec3 a, optional vec3 b;
+
+vec3 center = (exist(a) && exist(b)) * ( a + b ) / 2
+|| a * exist(a)
+|| b * exist(b);
+\end{lstlisting}
+
 \section{Kommentare}
 Kommentare sollen in der \ac{DSL} möglich sein.\\
 Einen Zeilen-Kommentar wird ein ``//'' vorangestellt.\\

@@ -1,5 +1,5 @@
 
-\addtocontents{toc}{\protect\newpage}
+%\addtocontents{toc}{\protect\newpage}
 \chapter{Integration in NetBeans-IDE}
 
 Syntaxhervorhebung und das Anzeigen von Syntaxfehlern erleichtert die Entwicklung von Programmen.
@@ -19,11 +19,11 @@ Hierfür wurde ein Editor gesucht, der Support für \acp{DSL} bietet.
 Die Wahl fiel auf Netbeans, da für die Plattform eine große Community mit verschiedenen Tutorials und Beispielen existiert.\footnote{Die Community ist zu finden unter \url{https://netbeans.org/community/index.html}}
 
 \section{Syntaxhervorhebung}
-Für die Syntaxhervorhebung in Netbeans gab es mehrere Tutorials.
+Für die Syntaxhervorhebung in Netbeans gibt es mehrere Tutorials.
 Die älteren der Tutorials nutzen \texttt{javacc} als Lexer und Parser.
 Die neueren Tutorials verwendeten hingegen \texttt{Antlr}.
 Als Grundlage wurde das Tutorial unter \cite{netbeansSyntax} sowie Anmerkungen dazu unter \cite{netbeansSyntaxNotes} aus dem Jahr 2009 verwendet.
-Da das Tutorial und die Anmerkungen dazu aus dem Jahr 2009 stammt, ist es nicht mehr aktuell.
+Da das Tutorial und die Anmerkungen dazu aus dem Jahr 2009 stammen, sind sie nicht mehr aktuell.
 Dadurch war die Umsetzung nicht so einfach wie anfangs angenommen.\\
 Das Tutorial verwendet \texttt{Antlr} in der Version 3, zum Zeitpunkt des Schreibens ist die aktuelle Version 4.7.2, welche nicht abwärtskompatibel ist.
 Es wurde zwar versucht das Tutorial mit der neueren Version von \texttt{Antlr} umzusetzen, was jedoch gescheitert ist, da sonst Internas hätten umgeschrieben werden müssen, da einige Funktionen aus der Version 3 nicht mehr in der Version 4 verfügbar sind.\\
@@ -86,7 +86,29 @@ functionCallStatement: IDENTIFIER LEFTPAREN (expression (COMMA expression)*)? RI
 %\end{minipage}
 
 \subsection{Umsetzung}
-TODO
+Das NetBeans-Modul teilt sich in zwei Submodule auf:
+\texttt{syntaxhighlighting} und \texttt{syntaxerror}.
+Der Sourcecode ist in 4 Packages unterteilt:
+
+\begin{description}
+\item{\textbf{syntaxhighlighting}} \\
+Hier sind alle Klassen, die für das Hervorheben der Tokens in dem Sourcecode zuständig sind.
+
+\item{\textbf{syntaxhighlighting.parser}} \\
+Die Komponenten Parser und Lexer mitsamt ihrer Antlr3-Grammatik sind hier abgelegt.
+Diese werden sowohl von dem syntaxhighlighting als auch dem syntaxerror Package verwendet.
+
+\item{\textbf{syntaxhighlighting.syntaxerror}} \\
+Diese Komponenten erzeugen mehrere \texttt{ErrorDescription}-Objekte, die NetBeans hinweisen, wo sich welche Sytaxfehler befinden.
+NetBeans färbt die Syntaxfehler daraufhin rot ein.
+
+\item{\textbf{syntaxhighlighting.utils}} \\
+In dem utils-Package sind zwei Helferklassen.
+Eine Klasse stellt welche eine Bridge zu dem Antlr-Framework dar.
+Die zweite Klasse liest bei dem Starten automatisch alle Token aus dem generierten Token-File von Antlr ein.
+Dadurch müssen nicht alle Token in dem Sourcecode hart codiert werden.
+
+\end{description}
 
 \subsection{Pflege der Grammatiken}
 Aufgrund der aktuellen Implementierung mittels zwei separaten Grammatiken müssen beide Grammatiken gepflegt werden, es findet also ein geringer Overhead statt.\\
