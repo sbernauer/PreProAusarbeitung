@@ -156,10 +156,7 @@ Dieser Fall mag ungewöhnlich wirken, warum sollte man den Code nicht einfach an
 Dies gibt mehr Sinn, wenn man ein Skript allgemeine verwenden möchte, und häufig genutzte Berechnungen auszulagern.
 In diesem Fall möchte man nicht jedes Mal die Berechnung aufs neue anpassen, sondern die Funktion einmal allgemein schreiben und die Ausführung abhängig von den gegebenen Daten machen.\\
 Das oben genannte Beispiel mit A und B könnte in etwa so ausgedrückt werden.
-Der gegebene Code in \code{lst:OptionalImportExample} ist nicht unbedingt mit dem PrePro-Interpreter ausführbar, soll aber das Prinzip verdeutlichen.\\
-Falls die Variable a und b beide existieren ergibt der Ausdruck \texttt{(exist(a) \&\& exist(b))} eine 1, andernfalls eine 0.\\
-\textcolor{red}{TODO, hier stimmt die Logik nicht!}
-
+Der gegebene Code in \code{lst:OptionalImportExample} ist nicht unbedingt mit dem PrePro-Interpreter ausführbar, soll aber das Prinzip verdeutlichen.
 \begin{lstlisting}[language=prepro, label={lst:OptionalImportExample}, caption={PrePro-Code mit optionalen Imports}, captionpos=b]
 import optional vec3 a, optional vec3 b;
 
@@ -167,6 +164,59 @@ vec3 center = (exist(a) && exist(b)) * ( a + b ) / 2
 || a * exist(a)
 || b * exist(b);
 \end{lstlisting}
+Falls die Variable a und b beide existieren ergibt der Ausdruck \texttt{(exist(a) \&\& exist(b))} eine 1, andernfalls eine 0.
+Allerdings beinhaltet das \code{lst:OptionalImportExample} ein großes Problem:
+Falls a existiert und b nicht, ergibt der Ausdruck \texttt{(exist(a) \&\& exist(b))} eine 0, der Interpreter rechnet dann weiter, also \texttt{* ( a + b ) / 2}.
+Das Ergebnis einer Multiplikation ist immer null, soweit würde alles passen, da durch das \texttt{||} die anderen Fälle probiert werden.
+Das Problem ist:
+Der Interpreter versucht \texttt{* ( a + b ) / 2}. zu berechnen und erzeugt - vollkommen zurecht - eine Fehlermeldung, dass b nicht definiert ist.\\
+Zur Lösung dieses Problems gibt es 2 Möglichkeiten:
+\begin{enumerate}
+\item \textbf{Lazy Multiplikation}\\
+Es wird ein neuer Multiplikations-Operator eingeführt, der den rechten Teil nur berechnet, wenn der linke Teil != 0 ist.
+Dadurch würde nach dem Teil \texttt{(exist(a) \&\& exist(b))} die Berechnung abgebrochen, da der linke Teil 0 ergibt.
+Durch das Abbrechen wird nicht versucht Variablen zu verwenden, die nicht definiert sind.
+Für diesen neuen Multiplikations-Operator muss ein neues Symol definiert werden, z.B. ``**''.\\
+\textbf{Vorteile}:
+\begin{itemize}
+\item Einfache Implementierung.
+\item Wiederverwendung des Operators an anderer Stelle möglich.
+\end{itemize}
+\textbf{Nachteile}:
+\begin{itemize}
+\item Die Nutzer müssen einen zusätzlichen Operator kennen und verstehen.
+\end{itemize}
+
+\item \textbf{Dedizierte If-Statements}\\
+In die \ac{DSL} PrePro wird noch das Konstrukt einer If-Verzweigung eingebaut.
+Der beispielhafte PrePro-Code würde somit wie in \code{lst:OptionalImportExample_If} aussehen.
+\begin{lstlisting}[language=prepro, label={lst:OptionalImportExample_If}, caption={PrePro-Code mit If-Statements und der exists-Funktion}, captionpos=b]
+import optional vec3 a, optional vec3 b;
+
+if(exists(a) && exists(b)) {
+    vec3 center = ( a + b ) / 2;
+} else if (exists(a)) {
+    vec3 center = a;
+} else if (exists(b)) {
+    vec3 center = b;
+}
+<<OPTIONAL>>
+else {
+	throw "Neither a or b was defined";
+}
+\end{lstlisting}
+\textbf{Vorteile}:
+\begin{itemize}
+\item Leichter lesbar und verständlich.
+\item Auch für andere Fälle als die Multiplikation ist das If-Statement verwendbar.
+\end{itemize}
+\textbf{Nachteile}:
+\begin{itemize}
+\item Erhöht die Anzahl der Codezeilen dramatisch.
+\item Höherer Aufwand bei der Implementierung
+\end{itemize}
+
+\end{enumerate}
 
 \section{Kommentare}
 Kommentare sollen in der \ac{DSL} möglich sein.\\
