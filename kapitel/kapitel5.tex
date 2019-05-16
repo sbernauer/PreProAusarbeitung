@@ -210,13 +210,18 @@ Eine Programmiersprache, die Dynamic Dispatching unterstützt ist Groovy.
 Groovy wurde 2007 offiziell herausgegeben und ist syntax-kompatibel zu Java.
 Der Code aus \code{lst:Dynamic_Dispatching} kann 1:1 in Groovy ausgeführt werden und erzeugt dort die erwartete Ausgabe von zwei mal ``I'm a dog''.
 Groovy sucht sich die aufzurufende Funktion zur Laufzeit anhand des konkreten Typs raus.\\
-Da Groovy syntax-kompatibel zu Java ist, wurde Groovy in das PrePro-Projekt aufgenommen.
-Bestehende Klassen konnten übernommen werden.
-Es wird allerdings darauf geachtet, dass der geschriebene Code Groovy (offensichtlich) und Java-kompatibel ist.
-Dadurch wird die Lesbarkeit erhöht, da keine ständiger Wechsel zwischen Java und Groovy-Syntax notwendig ist.
+Da durch das Dynamic Dispatching die Implementierung deutlich lesbarer ist, soll für PrePro eine Sprache eingesetzt werden, welche Dynamic Dispatching einsetzt.
+Hierfür würden prinzipiell verschiedene Sprachen in Betracht kommen (z.B. C++, Go oder Rust).
+Allerdings müsste man für die drei genannten Sprachen das Projekt neu schreiben, auch steht die Verwendung dieser Sprachen in Konflikt mit den Anforderungen in \kap{sec:usedTechnologies}, da das verwendete Framework in Java geschrieben ist.\\
+An dieser Stelle bietet sich Groovy an, da es syntax-kompatibel zu Java ist.
+Das bedeutet, das bestehende Projekt in Java kann mit nur sehr geringfügigen Änderungen in ein Groovy-Projekt transferiert werden.
+Groovy kann auch ohne Probleme Java-Code ausführen, kann also das verwendete Java-Framework auch ansprechen.
+Allerdings wurden aus Performancegründen nur die Klassen, die Dynamic Dispatching benötigen in Groovy transferiert, der Rest der Klassen wurden Java-Klassen gelassen.\\
+Es wird allerdings darauf geachtet, dass der geschriebene Code Java-syntax-kompatibel ist (Es wäre auch möglich Sprachkonstukte in Groovy zu verwenden, die in Java nicht möglich sind, hierauf wurde verzichtet).
+Dadurch wird die Lesbarkeit erhöht, da keine ständiger Wechsel zwischen Java und Groovy-Syntax notwendig ist.\\
 
 \subsection{Bauen von Java und Groovy Projekten}
-Da die \texttt{ND4j}-Bibliothek in Java geschrieben ist, wird versucht - sofern möglich - alles in Java zu schreiben.
+Da die \texttt{ND4J}-Bibliothek in Java geschrieben ist, wird versucht - sofern möglich - alles in Java zu schreiben.
 Groovy wird nur in den Klassen verwendet, wo es benötigt wird.
 Hierfür ist zu beachten, dass dies nicht nur die Klassen mit den Variable-Typen selber sind, sondern alle Klassen, die die Funktionen mittels Dynamic Dispatching aufrufen wollen.
 Dadurch entsteht ein Projekt, welches Java und Groovy-Sourcecode beinhaltet.
