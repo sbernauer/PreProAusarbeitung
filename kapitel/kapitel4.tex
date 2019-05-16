@@ -5,7 +5,8 @@
 In Programmiersprachen werden meist manche Codezeilen häufig benötigt.
 Anstatt diese Zeilen mehrfach zu kopieren, kann man diese Zeilen in eine sogenannte Funktion packen.
 Diese Funktionen können an beliebiger Stelle im Code aufgerufen werden.
-Auf diese Weise kürzt man den entstandenen Code, erhöht die Lesbarkeit und verhindert Kopierfehler.\\
+Auf diese Weise kann der entstandene Code gekürzt werden.
+Dies erhöht die Lesbarkeit und verhindert Kopierfehler.\\
 Daher soll die zu entwickelnde \ac{DSL} auch Funktionen unterstützen.\\
 \textbf{Parameter}\\
 Funktionen können auch parametrisiert werden, was bedeutet, dass bei dem Aufruf der Funktion Werte mitgegeben werden können.
@@ -34,7 +35,7 @@ Es gibt mehrere Gründe, warum die Definition einer Main-Funktion unnötig ist:
 \item Es soll nur ein einziger arithmetischer Ausdruck ausgewertet werden.
 \item Kompatibilität mit bisher bestehenden anderen Tools, die keine Funktionen bieten, sondern nur eine Liste von Anweisungen entgegennehmen.
 \end{itemize}
-Deshalb wird die Main-Funktion in \ac{PrePro} als optional gesehen und muss nicht deklariert werden.
+Deshalb wird die Main-Funktion in \acs{PrePro} als optional gesehen und muss nicht deklariert werden.
 Es reicht aus die Befehle untereinander zu schreiben.\\
 Trotzdem wird es als guter Stil erachtet, eine Main-Funktion zu deklarieren.
 
@@ -93,7 +94,7 @@ vec3 z = y X x;
 \end{lstlisting}
 
 \section{DataSet}
-Ein DataSet ist in der DSL eine Sammlung von Variablen der \ac{DSL}.
+Ein DataSet ist in der \ac{DSL} eine Sammlung von Variablen.
 In das DataSet können beliebig viele Variablen unter ihrem Namen gespeichert werden.
 Es ist nicht möglich zwei Variablen mit dem gleichen Namen abzulegen.
 Eine Variable kann bequem aus dem DataSet ausgelesen werden.
@@ -102,7 +103,7 @@ Eine Variable kann bequem aus dem DataSet ausgelesen werden.
 \label{sec:Import}
 
 Ein Programm, das nur Berechnungen anstellt erscheint auf den ersten Blick sinnlos.
-Das Programm muss die Möglichkeit haben, Daten zu lesen und zu schreiben.
+Es muss die Möglichkeit haben, Daten zu lesen und zu schreiben.
 Im Falle der DSL wird ein eigenes DataSet definiert.
 Das Programm erhält bei der Ausführung ein DataSet und gibt als Ergebnis wieder ein DataSet zurück.
 In das Eingabe-DataSet werden alle Variablen gespeichert, die für die Berechnungen benötigt werden.
@@ -126,7 +127,7 @@ Wenn nun in dem Programm versucht wird auf die Variable zuzugreifen wird eine Fe
 Deshalb ist es wichtig, die Gültigkeit der Variablen mittels der \texttt{exists}-Funktion zu prüfen, die im nächsten Kapitel vorgestellt wird.
 Wenn bei dem konstruieren des Ausführungspfad nicht aufgepasst wird, kann auf eine nicht geladene Variable zugegriffen werden.
 Das ist vergleichbar mit Nullpointern, die in eine Funktion hereingegeben werden können und zunächst mal auf \texttt{!= null} geprüft werden müssen.\\
-Deshal ist es definitiv nicht ratsam, alle Imports als optional zu kennzeichnen.
+Deshalb ist es definitiv nicht ratsam, alle Imports als optional zu kennzeichnen.
 
 \begin{lstlisting}[language=prepro, label={lst:OptionalImport}, caption={PrePro-Code mit optionalen Imports}, captionpos=b]
 function main() {
@@ -148,12 +149,12 @@ Mittels der Funktion \texttt{exists(<VariablenName>)} kann abgefragt werden, ob 
 Wurde die Variable geladen, gibt die Funktion eine 1 zurück, andernfalls eine 0.
 Nach Abschluss der Berechnungen in \code{lst:OptionalImport} hat die Variable \texttt{isPresent} der Wert 1, die Variable \texttt{not Present} den Wert 0.
 Dies ist in folgendem Fall nützlich:
-In eine Programm werden zwei Koordinaten-Zeitreihen A und B gegeben.
-Im Idealfall möchte man auf dem Mittelpunkt zwischen diesen Werten arbeiten.
+In ein Programm werden zwei Koordinaten-Zeitreihen A und B gegeben.
+Im Idealfall wird auf dem Mittelpunkt zwischen diesen Punkten gearbeitet.
 Ist jedoch die Variable A nicht definiert, soll für die Berechnung B verwendet werden, und anders herum.
 Eine kleine Abweichung wird hier in Kauf genommen.
-Dieser Fall mag ungewöhnlich wirken, warum sollte man den Code nicht einfach an A oder B anpassen?
-Dies gibt mehr Sinn, wenn man ein Skript allgemeine verwenden möchte, und häufig genutzte Berechnungen auszulagern.
+Dieser Fall mag ungewöhnlich wirken, warum sollte der Code nicht einfach an die Verwendung von A oder B angepasst werden?
+Dies gibt mehr Sinn, wenn ein Skript allgemein verwenden werden soll um häufig genutzte Berechnungen auszulagern.
 In diesem Fall möchte man nicht jedes Mal die Berechnung aufs neue anpassen, sondern die Funktion einmal allgemein schreiben und die Ausführung abhängig von den gegebenen Daten machen.\\
 Das oben genannte Beispiel mit A und B könnte in etwa so ausgedrückt werden.
 Der gegebene Code in \code{lst:OptionalImportExample} ist nicht unbedingt mit dem PrePro-Interpreter ausführbar, soll aber das Prinzip verdeutlichen.

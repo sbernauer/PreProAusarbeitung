@@ -107,7 +107,7 @@ In der überschriebenen \texttt{execute}-Funktion wird auf die Eingabe und das W
 
 \section{Typsystem}
 Das Typsystem von PrePro ist in \abb{fig:Typsystem} dargestellt.
-Alle Variablen erben von er abstrakten Klasse \texttt{Variable}.
+Alle Variablen erben von der abstrakten Klasse \texttt{Variable}.
 Es gibt die Untertypen \texttt{Vector}, \texttt{Marix}, \texttt{Scalar} und \texttt{Constant}.
 Die Unterklassen \texttt{Vector} und \texttt{Matrix} haben wiederum Unterklassen für drei- und vierelementige Varianten.
 Diese Unterklassen sind wichtig, da z.B. eine \texttt{Matrix3} mit einem \texttt{Vector3} multipliziert werden kann, allerdings nicht mit einem \texttt{Vector4}.\\
@@ -115,7 +115,7 @@ In der abstrakten Klasse \texttt{Variable} sind die Funktionen \texttt{add}, \te
 Werden die Funktionen auf der abstrakten Klasse aufgerufen, werfen sie eine Exception, dass die mathematische Operation nicht definiert sei.\\
 Die Unterklassen haben nun die Möglichkeit, Operationen mit anderen Typen zu definieren.
 Mittels Polymorphie und dynamic dispatching wird bei einer arithmetischen Operation die passende Funktion gesucht.
-Falls keine passende Funktion wird die allgemeine - in der abstrakten Klasse definierte - Funktion verwendet, und daraufhin eine Exception geworfen, dass die mathematische Operation nicht definiert sei.
+Falls keine passende Funktion gefunden wird, wird die allgemeine - in der abstrakten Klasse definierte - Funktion verwendet, und daraufhin eine Exception geworfen, dass die mathematische Operation nicht definiert sei.
 
 \begin{figure}[H]
 	\centering
@@ -212,11 +212,12 @@ Der Code aus \code{lst:Dynamic_Dispatching} kann 1:1 in Groovy ausgeführt werde
 Groovy sucht sich die aufzurufende Funktion zur Laufzeit anhand des konkreten Typs raus.\\
 Da durch das Dynamic Dispatching die Implementierung deutlich lesbarer ist, soll für PrePro eine Sprache eingesetzt werden, welche Dynamic Dispatching einsetzt.
 Hierfür würden prinzipiell verschiedene Sprachen in Betracht kommen (z.B. C++, Go oder Rust).
-Allerdings müsste man für die drei genannten Sprachen das Projekt neu schreiben, auch steht die Verwendung dieser Sprachen in Konflikt mit den Anforderungen in \kap{sec:usedTechnologies}, da das verwendete Framework in Java geschrieben ist.\\
+Allerdings müsste für die drei genannten Sprachen das Projekt neu geschrieben werden, auch steht die Verwendung dieser Sprachen in Konflikt mit den Anforderungen in \kap{sec:usedTechnologies}, da das verwendete Framework in Java geschrieben ist.\\
 An dieser Stelle bietet sich Groovy an, da es syntax-kompatibel zu Java ist.
 Das bedeutet, das bestehende Projekt in Java kann mit nur sehr geringfügigen Änderungen in ein Groovy-Projekt transferiert werden.
 Groovy kann auch ohne Probleme Java-Code ausführen, kann also das verwendete Java-Framework auch ansprechen.
-Allerdings wurden aus Performancegründen nur die Klassen, die Dynamic Dispatching benötigen in Groovy transferiert, der Rest der Klassen wurden Java-Klassen gelassen.\\
+Allerdings wurden aus Performancegründen nur die Klassen, die Dynamic Dispatching benötigen, in Groovy transferiert.
+Die anderen Klassen wurden in Java gelassen.\\
 Es wird allerdings darauf geachtet, dass der geschriebene Code Java-syntax-kompatibel ist (Es wäre auch möglich Sprachkonstukte in Groovy zu verwenden, die in Java nicht möglich sind, hierauf wurde verzichtet).
 Dadurch wird die Lesbarkeit erhöht, da keine ständiger Wechsel zwischen Java und Groovy-Syntax notwendig ist.\\
 
@@ -261,7 +262,7 @@ Diese Operationen sind elementweise und werden direkt von ND4J zur Verfügung ge
 
 \section{Kreuzprodukt}
 Anders als die vier Grundarten aus dem vorherigen Abschnitt wird das Kreuzprodukt von ND4J nicht als Operation angeboten.
-Das Kreuzprodukt wird in der Praxis allerdings zu Beispiel für das Aufspannen von Vektoren im dreidimensionalen Raum benötigt.
+Das Kreuzprodukt wird in der Praxis allerdings zum Beispiel für das Aufspannen von Vektoren im dreidimensionalen Raum benötigt.
 Daher wird an dieser Stelle das Kreuzprodukt zweier Vektoren selber implementiert.
 Falls ND4J in Zukunft den Operator Kreuzprodukt bereit stellt, kann in zukünftigen Varianten auf ihre Implementierung zugegriffen werden, da diese wahrscheinlich effizienter sein wird.
 Die eigene Implementierung des Kreuzprodukts kann auf folgende Arten geschehen:
@@ -379,7 +380,7 @@ Bei großer Anzahl Datensätze war dies allerdings nicht mehr möglich.\\
 Da die Implementierung mittels Subarrays deutlich schneller ist, wurde sie für die \ac{DSL} verwendet.
 
 \section{Tests}
-Für \ac{PrePro} wurden keine Komponenten-Tests, sondern Integrationstests geschrieben.
+Für PrePro wurden keine Komponenten-Tests, sondern Integrationstests geschrieben.
 Hierbei wurde sich an Tests an einer Referenzimplementierung einer \ac{DSL} von Oracle orientiert.
 Die Implementierung ist unter \cite{simpleLanguage} zu finden.\\
 Ein Test besteht aus zwei Dateien:
