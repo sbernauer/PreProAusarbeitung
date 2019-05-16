@@ -1,0 +1,57 @@
+
+\addtocontents{toc}{\protect\newpage}
+\chapter{Ausblick}
+\section{Verbesserungen an PrePro}
+An dieser Stelle werden ein paar Punkte genannt, in denen das Projekt PrePro verbessert und weiter entwickelt werden kann.
+
+\subsection{Überladen von Funktionen}
+Überladen ist das Definieren von Funktionen mit dem gleichen Namen, die sich nur in der Zahl und Art ihrer Parameter unterscheiden.
+So ist es z.B. möglich eine \texttt{add(vec3 a, vec3 b)}-Funktion und eine \texttt{add(mat3 a, mat3 b)}-Funktion zu definieren.
+Abhängig davon, ob ein Vektor oder eine Matrix als Parameter übergeben wird, wird die passende Funktion aufgerufen.
+Dies ermöglicht es, den Code lesbarer zu gestalten.\\
+Aktuell sind die Funktionen in PrePro nicht überladbar, dies könnte aber in einer zukünftigen Arbeit hinzugefügt werden.\\
+Für die Umsetzung müsste die \texttt{FunctionTable} angepasst werden.
+Diese speichert zur Zeit die Funktionen in einer \texttt{HashMap<String, Function>}.
+Diese HashMap muss durch eine eigene Implementierung ersetzt werden, welche die Argumenttypen mit einbezieht.\\
+Die Methode\\
+\texttt{public Function getFunction(String functionName)} in der \texttt{FunctionTable} müsste um die Argumenttypen als Parameter erweitert werden.
+Sie könnte dann z.B. so aussehen:\\
+\texttt{public Function getFunction(String functionName, Class... parameterTypes)}
+
+\subsection{Sämtliche Operatoren für die Datentypen implementieren}
+Während der Erstellung der Arbeit war es leider zeitlich nicht möglich, alle Operationen, die mit den Datentypen durchgeführt werden können zu implementieren.
+Hier muss noch nachgearbeitet werden, damit zukünftigen Nutzern sämtliche Operationen zur Verfügung stehen.\\
+Die Operationen sind in den Groovy-Klassen der entsprechenden Datentypen (z.B. \texttt{Vector3}) zu implementieren.
+An dieser Stelle sei auf die bisherigen Operatoren als Referenz verwiesen.
+Wichtig ist es an dieser Stelle, auch Tests für den Operator zu schreiben, damit seine korrekte Funktionalität dauerhaft sichergestellt werden kann.
+
+\subsection{Performance der Operationen verbessern}
+Das Thema Performance ist keine einfaches Gebiet, man kann sich sehr lange damit beschäftigen.
+Im Allgemeinen sollte man versuchen, möglichst viele Operationen mit ND4J-Operationen auszudrücken.
+Diese wurden von ND4J bereits optimiert und laufen - je nach Umgebung - sogar auf der \ac{GPU}.
+Daher sollte es vermieden werden, in einer Operation eine Java-Schleife zu verwenden, da diese zwangsläufig auf der \ac{CPU} ausgeführt wird, und somit den Vorteil der schnelleren \ac{GPU} zunichte macht.\\
+Trotzdem gibt in manchen Operatoren Java-Schleifen.
+Diese sollten entfernt werden und durch ND4J-Befehle ersetzt werden.
+
+\subsection{Portieren in die Truffle/Graal Architektur}
+
+\subsection{Debugger implementieren}
+Wie bereits in \kap{sec:Debugging_graphical} angedeutet wurde, wäre eine Debugger für PrePro-Skripte in der NetBeans-IDE wünschenswert.
+Die Gründe und eine Anleitung ist in dem genannten Kapitel verlinkt.
+
+\section{Verbesserungen an der umgebenden Infrastruktur}
+Für den Fall, das viele Nutzer PrePro nutzen, kann die umgebende Infrastruktur angenehmer für den Nutzer gestaltet werden.
+So senkt sich die Einstiegshürde für neue Benutzer.
+
+\subsection{PrePro-Artefakt ins Maven Central laden}
+Alle benötigten Abhängigkeiten werden von Maven standardmäßig aus dem Maven Central geladen.
+Es ist eine große Sammlung von Artefakten, welche bequem per Maven-\ac{POM} heruntergeladen und eingebunden werden können.
+Ein Hochladen in das Maven Central ermöglicht es, dass Nutzer ganz einfach PrePro in ihren Projekten verwenden können.
+
+\subsection{NetBeans-Plugin in öffentliche Plguin-Sammlung laden}
+NetBeans bietet online eine Sammlung von Plugins, welche seht bequem in der NetBeans IDE heruntergeladen und installiert werden können.
+Somit entfällt das aufwendige Verteilen einer Datei und das Importieren dieser in NetBeans.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\endinput
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

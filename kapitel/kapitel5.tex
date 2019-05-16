@@ -268,12 +268,12 @@ Die eigene Implementierung des Kreuzprodukts kann auf folgende Arten geschehen:
 \subsection{Implementierung Kreuzprodukt mittels For-Schleife}
 Bei der Implementierung mittels der For-Schleife werden die eigentlichen Berechnungen in Java durchgeführt.
 Als erstes wird ein Double-Array als Zwischenspeicher für das Ergebnis angelegt.
-Es besitzt (Anzahl der Zeitelemente in den Eingabe-Vektoren) * drei Elemente.
+Es besitzt (Anzahl der Zeitelemente in den Eingabe-Vektoren) * 3 Elemente.
 Die Anzahl der Elemente entspricht so der Anzahl der Elemente der Ergebnismatrix, die Daten können in dem Double-Array effizient gespeichert werden.
 Das Array wird im Anschluss in eine Matrix konvertiert.
 Für die Berechnung der Elemente wird mittels einer For-Schleife über alle Zeilen der Matrix iteriert.
 In jeder Zeile werden die 3 Werte des entstehenden Ergebnisvektors berechnet und in das Double-Array gespeichert.
-Abschließend wir das Double-Array in eine Matrix mit den Dimensionen [<Anzahl Zeitelemente> x drei] konvertiert und durch eine Vector3-Wrapper-Klasse als Vector mit 3 Werten gekennzeichnet.
+Abschließend wir das Double-Array in eine Matrix mit den Dimensionen [<Anzahl Zeitelemente> x 3] konvertiert und durch eine Vector3-Wrapper-Klasse als Vector mit 3 Werten gekennzeichnet.
 Der Algorithmus ist in \code{lst:Kreuzprodukt_For} dargestellt.
 
 \begin{lstlisting}[escapeinside={\%*}{*)},language=java, label={lst:Kreuzprodukt_For}, caption={Implementierung Kreuzprodukt mittels for-Schleife}, captionpos=b]
@@ -297,6 +297,8 @@ private Vector3 crossProduct(Vector3 left, Vector3 right) {
 \end{lstlisting}
 
 \subsection{Implementierung Kreuzprodukt mittels Subarrays}
+Bei der Implementierung mittels Subarrays wird nur auf ND4J-Funktionen zurückgegriffen, da diese optimiert sind.
+Die Implementierung ist in \code{lst:Kreuzprodukt_Subarray} zu finden.
 \begin{lstlisting}[escapeinside={\%*}{*)},language=java, label={lst:Kreuzprodukt_Subarray}, caption={Implementierung Kreuzprodukt mittels for-Schleife}, captionpos=b]
 %*
 \begin{minted}[frame=single,framesep=10pt,breaklines]{java}
@@ -327,7 +329,7 @@ private Vector3 crossProductSubArray(Vector3 left, Vector3 right) {
 \end{minted}
 \end{lstlisting}
 
-\section{Vergleich der Implementierungen für Kreuzprodukt}
+\subsection{Vergleich der Implementierungen für Kreuzprodukt}
 Beide Impelemtierungsmöglichkeiten haben Vor- und Nachteile.
 Diese sind in \tab{tab:Vorteile_Kreuzprodukt_Implementierungen} aufgeführt.
 \begin{table}[H]
@@ -343,7 +345,7 @@ Diese sind in \tab{tab:Vorteile_Kreuzprodukt_Implementierungen} aufgeführt.
 \end{table}
 
 \noindent Für große Zeitreihen müsste sich die Implementierung mittels dem Subarray als effizienter erweisen, besonders wenn die Berechnungen auf der \ac{GPU} durchgeführt werden.
-Als Nachweis und für das Effizienzverhalten bei kleinen Zeitreihen wurde ein Benchmark durchgeführt.
+Als Nachweis und für das Effizienzverhalten bei verschiedenen Zeitreihen wurde ein Benchmark durchgeführt.
 Die Ergebnisse sind in \tab{tab:Benchmark_Kreuzprodukt_Implementierung} festgehalten.
 
 \begin{table}[H]
@@ -364,14 +366,41 @@ Die Ergebnisse sind in \tab{tab:Benchmark_Kreuzprodukt_Implementierung} festgeha
 	\label{tab:Benchmark_Kreuzprodukt_Implementierung}
 \end{table}
 
-3 Varianten
+\noindent
+Es ist erkennbar, dass die For-Schleife stets langsamer ist als die Implementierung mittels Subarrays.
+Das Verhalten war aufgrund der Optimierung der ND4J-Funktionen erwartet.
+Interessant ist an dieser Stelle, dass die Laufzeitoptimierung von Java bei kleiner Anzahl Datensätze die Laufzeit nach 5 Schleifendurchläufen drastisch reduzieren konnte.
+Bei großer Anzahl Datensätze war dies allerdings nicht mehr möglich.\\
+Da die Implementierung mittels Subarrays deutlich schneller ist, wurde sie für die \ac{DSL} verwendet.
 
-Benchmarks!
-Klassifizierung \ac{CPU} oder \ac{GPU}-Workload.
+\section{Tests}
+Für \ac{PrePro} wurden keine Komponenten-Tests, sondern Integrationstests geschrieben.
+Hierbei wurde sich an Tests an einer Referenzimplementierung einer \ac{DSL} von Oracle orientiert.
+Die Implementierung ist unter \cite{simpleLanguage} zu finden.\\
+Ein Test besteht aus zwei Dateien:
+\begin{enumerate}
+\item Einem Test-PrePro-Skript
+\item Einer toString()-Ausgabe des erzeugten PreProDataSets.
+\end{enumerate}
+Für jeden Test wird das gleiche PreProDataSet vorbereitet.
+Es besteht aus ein paar Variablen verschiedenen Typs, diese stehen in allen Tests zur Verfügung.
+Das gegebene PrePro--Skript, das getestet werden soll, wird mit diesem DataSet ausgeführt.
+Das Skript gibt alle benutzten und errechneten Variablen mittels dem Export-Statement zurück.\\
+Die toString()-Funktion des PreProDataSets wurde so gestaltet, dass sie alle in dem DataSet gespeicherten Variablen ausgibt.
+Wenn die toString()-Funktion von zwei PreProDataSets übereinstimmt, kann davon ausgegangen werden, dass die gleichen Variablen darin gespeichert sind.
 
-Möglicherweise lohnt sich die eher \ac{GPU}-betonte Variante erst ab gewisser Größe.
-=> Dann mit konstantem Aufwand entscheiden, welches Verfahren.
-Vom Nutzer (während Laufzeit) auswählbar?
+\subsection{Hinzufügen eines neuen Tests}
+Für einen neuen Test müssen folgende zwei Schritte durchgeführt werden:
+\begin{enumerate}
+\item Hinzufügen eines PrePro-Skriptes unter \texttt{src/test/tests}.
+Dieses Verzeichnis wird von dem TestExecutor nach Tests durchsucht, der Test muss nicht registriert werden.
+Das Skript kann unter einem beliebigen Subverzeichnis unter der Dateieinendung \texttt{*.prepro} gespeichert werden.
+Falls gewünscht, können die Tests ausgeführt werden und im Log geschaut werden, ob der Test korrekterweise ausgeführt wurde (\texttt{mvn test}).
+\item Bereitstellen des erwarteten Ergebnisses mittels toString()-Funktion des entstandenen PreProDataSets.
+Der String wird in eine Datei mit der Dateiendung \texttt{*.out} gespeichert.
+Wichtig ist, dass der selbe Dateiname (ohne Endung) wie bei Schritt 1.) verwendet wird, damit der TestExecutor die Ausgabe dem PrePro-Skript zuordnen kann.
+\end{enumerate}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \endinput
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
