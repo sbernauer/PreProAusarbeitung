@@ -25,6 +25,12 @@ Die Operationen sind in den Groovy-Klassen der entsprechenden Datentypen (z.B. \
 An dieser Stelle sei auf die bisherigen Operatoren als Referenz verwiesen.
 Wichtig ist es an dieser Stelle, auch Tests für den Operator zu schreiben, damit seine korrekte Funktionalität dauerhaft sichergestellt werden kann.
 
+\subsection{If-Statements in die \ac{DSL} mit aufnehmen}
+Aktuell sind in der \ac{DSL} keine If-Statements implementiert.
+Diese werden durch eine Lazy Multiplikation abgebildet (siehe \kap{sec:existsFunction}).
+Allerdings lassen sich durch die Lazy Berechnung nicht alle möglichen Anwendungsfälle der Nutzer abdecken.
+Daher kann es für manche PrePro-Skripte erforderlich sein, ein If-Statement zur Verfügung zu haben.
+
 \subsection{Performance der Operationen verbessern}
 Das Thema Performance ist keine einfaches Gebiet, man kann sich sehr lange damit beschäftigen.
 Im Allgemeinen sollte man versuchen, möglichst viele Operationen mit ND4J-Operationen auszudrücken.
@@ -34,6 +40,13 @@ Trotzdem gibt in manchen Operatoren Java-Schleifen.
 Diese sollten entfernt werden und durch ND4J-Befehle ersetzt werden.
 
 \subsection{Portieren in die Truffle/Graal Architektur}
+Truffle ist ein Projekt von Oracle Labs, welches auf der Graal \ac{VM} ausgeführt werden kann.
+Es soll eine sehr performante Umsetzung einer \ac{DSL} ermöglichen.
+Leider war es aufgrund der Komplexität von Truffle nicht möglich die \ac{DSL} mittels Truffle umzusetzen.
+So wurden viele Kenntnisse im Bereich Compiler- / Interpreterbau vorausgesetzt, wodurch der Rahmen dieser Arbeit gesprengt worden wäre.
+Nichtsdestotrotz ist eine Umsetzung mittels Truffle wünschenswert.
+Da allerdings in der \ac{DSL} aufwändige Matrizenoperationen durchgeführt werden, fallen die kleineren Optimierungen, die Truffle durchführen kann, höchstwahrscheinlich nicht wirklich ins Gewicht.
+Eine Anleitung für die Verwendung von Truffle gibt es unter \cite{TruffleHowTo}.
 
 \subsection{Debugger implementieren}
 Wie bereits in \kap{sec:Debugging_graphical} angedeutet wurde, wäre eine Debugger für PrePro-Skripte in der NetBeans-IDE wünschenswert.

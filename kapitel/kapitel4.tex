@@ -27,7 +27,7 @@ Jedes prozedurale Programm benötigt einen Einstiegspunkt, wo das Programm gesta
 Da die DSL ein Framework verwendet, welches in Java geschrieben ist, ist es nicht unwahrscheinlich, dass die zukünftigen Nutzer vorher in Java programmiert haben.
 Daher wurde als Einstiegspunkt des Programms - wie in Java - eine Main-Funktion gewählt.
 In der DSL besitzt sie keine Parameter.
-Um Daten in sein Programm zu laden wurde der Ansatz eines DataSets gewählt, mehr dazu in \kap{sec:Import}.
+Um Daten in sein Programm zu laden wurde der Ansatz eines DataSets gewählt, welches in \kap{sec:Import} beschrieben ist.
 
 \subsection{Weglassen der Main-Funktion}
 Es gibt mehrere Gründe, warum die Definition einer Main-Funktion unnötig ist:
@@ -83,6 +83,7 @@ Daher muss dem Interpreter beim Anlegen der Variablen immer der Typ mitgeteilt w
 Wenn die Variable schon existiert, muss der Typ nicht erneut angegeben werden.\\
 Ein Beispiel befindet sich in \code{lst:Bsp_Variablenzuweisung}.\\
 Das Import-Statement wird in \kap{sec:Import} erläutert, relevant ist an dieser Stelle nur, dass mit dem Import Daten aus einem DataSet geladen werden.
+Das DataSet wird in \kap{sec:Import} beschrieben.
 
 \begin{lstlisting}[language=prepro, label={lst:Bsp_Variablenzuweisung}, caption={Beispiel Variablenzuweisung}, captionpos=b]
 import vec3 p1, vec3 p2, vec3 p3;
@@ -145,6 +146,7 @@ function foo() returns const {
 }
 \end{lstlisting}
 
+\label{sec:existsFunction}
 \subsection{Die exists-Funktion}
 Mittels der Funktion \texttt{exists(<VariablenName>)} kann abgefragt werden, ob diese Variable geladen wurde.
 Wurde die Variable zur Verfügung gestellt, gibt die Funktion eine 1 zurück, andernfalls eine 0.
