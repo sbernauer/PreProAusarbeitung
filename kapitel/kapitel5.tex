@@ -168,9 +168,9 @@ In den Subklassen werden nun die Operatoren überschrieben und so das Standardve
 Dieser Ansatz hätte zusätzlich den Vorteil, dass man Operatoren auch auf Klassen in der Mitte der Hierarchie - z.B. ein allgemeiner Vektor - anwenden kann. So kann die Vektoraddition an einer zentralen Stelle für \texttt{Vector3} und \texttt{Vector4} erfolgen.\\
 
 \subsection{Dynamic Dispatching}
-In der Theorie würde der aufgeführte Ansatz perfekt funktionieren.\\
+In der Theorie würde der aufgeführte Ansatz mit der Implementierung der Operationen als Funktionen in den Variablen-Klassen perfekt funktionieren.\\
 Warum in der Theorie?
-Dies allgemeine Problem wird in \code{lst:Dynamic_Dispatching} ersichtlich.
+Das allgemeine Problem wird in \code{lst:Dynamic_Dispatching} ersichtlich.
 
 \begin{lstlisting}[escapeinside={\%*}{*)},language=java, label={lst:Dynamic_Dispatching}, caption={Java-Code zur Illustrierung von Dynamic Dispatching}, captionpos=b]
 %*
@@ -198,7 +198,12 @@ class Animal { }
 class Dog extends Animal { }
 \end{minted}
 \end{lstlisting}
-Das erwartete Verhalten wäre zwei Mal die Ausgabe ``I'm a dog''.\\
+
+\noindent
+Die zwei Funktionen ``test'' sind - wie die main-Funktion - statisch, da sie sonst nicht von der main-Funktion aufgerufen werden können.
+Die Auswahl, welche test-Funktion verwendet wird, hängt von dem Typ des übergebenen Parameters ab.
+Hier würde man als Mensch erwarten, dass die Auswahl anhand des tatsächlichen Typs des Parameters erfolgt.
+Da bei beiden Funktionsaufrufen ein Dog als Parameter übergeben wird, wäre das erwartete Verhalten zwei Mal die Ausgabe ``I'm a dog''.\\
 Die tatsächliche Ausgabe ist aber ``I'm a dog'' gefolgt von ``I'm a animal''.\\
 Warum das?
 Java entscheidet schon zur Kompilierzeit, welche Funktion aufgerufen wird.
